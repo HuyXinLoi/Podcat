@@ -23,18 +23,32 @@ public class JwtService {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 
-    public String generateToken(String username, Set<Role> roles) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("roles", roles.stream().map(Enum::name).collect(Collectors.toList()));
+    // public String generateToken(String username, Set<Role> roles) {
+    //     Map<String, Object> claims = new HashMap<>();
+    //     claims.put("roles", roles.stream().map(Enum::name).collect(Collectors.toList()));
 
+    //     return Jwts.builder()
+    //             .setClaims(claims)
+    //             .setSubject(username)
+    //             .setIssuedAt(new Date())
+    //             .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
+    //             .signWith(getSignKey(), SignatureAlgorithm.HS256)
+    //             .compact();
+    // }
+    public String generateToken(String userId, String username, Set<Role> roles) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("username", username); // thêm username làm claim phụ
+        claims.put("roles", roles.stream().map(Enum::name).collect(Collectors.toList()));
+    
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(username)
+                .setSubject(userId) // sub giờ là userId
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
+    
 
     public String extractUsername(String token) {
         return extractAllClaims(token).getSubject();

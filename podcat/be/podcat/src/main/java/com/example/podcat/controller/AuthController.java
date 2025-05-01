@@ -39,7 +39,7 @@ public class AuthController {
                 .build();
 
         userRepo.save(user);
-        var token = jwtService.generateToken(user.getUsername(), user.getRoles());
+        var token = jwtService.generateToken(user.getId(),user.getUsername(), user.getRoles());
 
         return ResponseEntity.ok(new AuthResponse(token));
     }
@@ -52,7 +52,7 @@ public class AuthController {
         );
 
         var user = userRepo.findByUsername(req.getUsername()).get();
-        var token = jwtService.generateToken(user.getUsername(), user.getRoles());
+        var token = jwtService.generateToken(user.getId(),user.getUsername(), user.getRoles());
 
         return ResponseEntity.ok(new AuthResponse(token));
     }

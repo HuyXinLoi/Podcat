@@ -32,7 +32,8 @@ public class SecurityConfig {
                                     "/v3/api-docs/**", 
                                     "/api/upload/**", 
                                     "/api/podcasts/**", 
-                                    "/api/categories/**").permitAll()
+                                    "/api/categories/**",
+                                    "/api/users/**").permitAll()
                     .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
