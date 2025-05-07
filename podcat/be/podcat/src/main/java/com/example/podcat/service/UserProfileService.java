@@ -16,24 +16,24 @@ import org.springframework.stereotype.Service;
 public class UserProfileService {
 
     private final UserProfileRepository userProfileRepository;
-    private final UserRepository userRepository;
+    //private final UserRepository userRepository;
     private final PlaylistRepository playlistRepository;
-    private final PodcastRepository podcastRepository;
+   // private final PodcastRepository podcastRepository;
 
     public UserProfileResponse getProfile(String userId) {
         UserProfile profile = userProfileRepository.findByUserId(userId)
                 .orElse(UserProfile.builder().userId(userId).build());
         
-        String username = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"))
-                .getUsername();
+        // String username = userRepository.findById(userId)
+        //         .orElseThrow(() -> new ResourceNotFoundException("User not found"))
+        //         .getUsername();
         
         int playlistCount = playlistRepository.findByUserId(userId).size();
         
         return UserProfileResponse.builder()
                 .id(profile.getId())
                 .userId(userId)
-                .username(username)
+                //.username(username)
                 .name(profile.getName())
                 .bio(profile.getBio())
                 .avatarUrl(profile.getAvatarUrl())
