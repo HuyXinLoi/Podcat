@@ -59,6 +59,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     final isDesktop = ResponsiveHelper.isDesktop(context);
     final isTablet = ResponsiveHelper.isTablet(context);
+    final user = context.watch<AuthBloc>().state.user;
+
+    if (user == null) {
+      return Scaffold(
+        appBar: AppBar(title: Text(context.tr('edit_profile'))),
+        body: Center(
+          child: Text(
+            context.tr('user_not_found'),
+            style: TextStyle(
+              fontSize: ResponsiveHelper.getFontSize(context, 18),
+            ),
+          ),
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -95,30 +110,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Center(
-                      child: BlocBuilder<AuthBloc, AuthState>(
-                        builder: (context, state) {
-                          final user = state.user;
-                          return CircleAvatar(
-                            radius:
-                                ResponsiveHelper.isMobile(context) ? 60 : 80,
-                            backgroundImage: user?.avatarUrl != null
-                                ? NetworkImage(user!.avatarUrl!)
-                                : null,
-                            child: user?.avatarUrl == null
-                                ? Text(
-                                    user?.name?.substring(0, 1).toUpperCase() ??
-                                        user?.username
-                                            .substring(0, 1)
-                                            .toUpperCase() ??
-                                        '',
-                                    style: TextStyle(
-                                      fontSize: ResponsiveHelper.getFontSize(
-                                          context, 40),
-                                    ),
-                                  )
-                                : null,
-                          );
-                        },
+                      child: CircleAvatar(
+                        radius: ResponsiveHelper.isMobile(context) ? 60 : 80,
+                        backgroundImage: (user.avatarUrl != null &&
+                                user.avatarUrl!.isNotEmpty)
+                            ? NetworkImage(user.avatarUrl!)
+                            : null,
+                        child: (user.avatarUrl == null ||
+                                user.avatarUrl!.isEmpty)
+                            ? Text(
+                                (user.name?.isNotEmpty ?? false)
+                                    ? user.name![0].toUpperCase()
+                                    : (user.username?.isNotEmpty ?? false)
+                                        ? user.username![0].toUpperCase()
+                                        : '',
+                                style: TextStyle(
+                                  fontSize:
+                                      ResponsiveHelper.getFontSize(context, 40),
+                                ),
+                              )
+                            : null,
                       ),
                     ),
                     SizedBox(

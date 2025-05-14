@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:podcat/blocs/auth/auth_bloc.dart';
@@ -40,12 +41,17 @@ class CommentList extends StatelessWidget {
 
             return ListTile(
               leading: CircleAvatar(
-                child: Text(comment.userId.substring(0, 1).toUpperCase()),
+                child: Text((comment.userId.isNotEmpty
+                        ? comment.userId.substring(0, 1)
+                        : "?")
+                    .toUpperCase()),
               ),
               title: Row(
                 children: [
                   Text(
-                    'User ${comment.userId.substring(0, 5)}',
+                    comment.userId.isNotEmpty
+                        ? 'User ${comment.userId.substring(0, min(5, comment.userId.length))}'
+                        : 'Unknown User',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: ResponsiveHelper.getFontSize(context, 14),

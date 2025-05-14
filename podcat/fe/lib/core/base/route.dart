@@ -9,6 +9,10 @@ import 'package:podcat/views/auth/login_screen.dart';
 import 'package:podcat/views/auth/register_screen.dart';
 import 'package:podcat/views/category/category_podcasts_screen.dart';
 import 'package:podcat/views/home/home_screen.dart';
+import 'package:podcat/views/home/tabs/discover_tab.dart';
+import 'package:podcat/views/home/tabs/library_tab.dart';
+import 'package:podcat/views/home/tabs/profile_tab.dart';
+import 'package:podcat/views/home/tabs/search_tab.dart';
 import 'package:podcat/views/playlist/playlist_detail_screen.dart';
 import 'package:podcat/views/playlist/playlist_form_screen.dart';
 import 'package:podcat/views/podcast/podcast_detail_screen.dart';
@@ -26,116 +30,113 @@ class AppRouter {
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/',
     debugLogDiagnostics: true,
-    redirect: (BuildContext context, GoRouterState state) {
+    redirect: (context, state) {
       final authState = context.read<AuthBloc>().state;
       final isLoggedIn = authState.status == AuthStatus.authenticated;
 
-      // Allow access to splash, login, and register screens without authentication
-      if (state.matchedLocation == '/' ||
-          state.matchedLocation == '/login' ||
-          state.matchedLocation == '/register') {
-        return null;
-      }
+      final isSplash = state.matchedLocation == '/';
+      final isLoginOrRegister = state.matchedLocation == '/login' ||
+          state.matchedLocation == '/register';
 
-      // Redirect to login if not logged in
-      if (!isLoggedIn) {
+      if (!isLoggedIn && !isLoginOrRegister && !isSplash) {
         return '/login';
       }
 
       return null;
     },
     routes: [
-      // Splash screen
       GoRoute(
+        name: 'splash',
         path: '/',
         builder: (context, state) => const SplashScreen(),
       ),
-
-      // Auth routes
       GoRoute(
+        name: 'login',
         path: '/login',
         builder: (context, state) => const LoginScreen(),
       ),
       GoRoute(
+        name: 'register',
         path: '/register',
         builder: (context, state) => const RegisterScreen(),
       ),
-
-      // Home screen with shell for bottom navigation
       ShellRoute(
         navigatorKey: _shellNavigatorKey,
         builder: (context, state, child) => HomeScreen(child: child),
         routes: [
-          // Discover tab
           GoRoute(
+            name: 'discover',
             path: '/discover',
-            builder: (context, state) => const HomeScreen(initialIndex: 0),
+            builder: (context, state) => const DiscoverTab(),
           ),
-
-          // Search tab
           GoRoute(
+            name: 'search',
             path: '/search',
-            builder: (context, state) => const HomeScreen(initialIndex: 1),
+            builder: (context, state) => const SearchTab(),
           ),
-
-          // Library tab
           GoRoute(
+            name: 'library',
             path: '/library',
-            builder: (context, state) => const HomeScreen(initialIndex: 2),
+            builder: (context, state) => const LibraryTab(),
           ),
-
-          // Profile tab
           GoRoute(
+            name: 'profile',
             path: '/profile',
-            builder: (context, state) => const HomeScreen(initialIndex: 3),
+            builder: (context, state) => const ProfileTab(),
           ),
         ],
       ),
-
-      // Podcast detail
       GoRoute(
+        name: 'podcast-detail',
         path: '/podcast/:id',
         builder: (context, state) {
           final podcastId = state.pathParameters['id']!;
           return PodcastDetailScreen(podcastId: podcastId);
         },
       ),
-
-      // Podcast player
       GoRoute(
+        name: 'podcast-play',
         path: '/podcast/:id/play',
         builder: (context, state) {
-          final podcast = state.extra as Podcast;
+          final podcast = state.extra as Podcast?;
+          if (podcast == null) {
+            return const Scaffold(
+                body: Center(child: Text('Podcast not found')));
+          }
           return PodcastPlayerScreen(podcast: podcast);
         },
       ),
-
-      // Category podcasts
       GoRoute(
+        name: 'category',
         path: '/category/:id',
         builder: (context, state) {
-          final category = state.extra as Category;
+          final category = state.extra as Category?;
+          if (category == null) {
+            return const Scaffold(
+                body: Center(child: Text('Category not found')));
+          }
           return CategoryPodcastsScreen(category: category);
         },
       ),
-
-      // Playlist form
       GoRoute(
+        name: 'playlist-create',
         path: '/playlist/create',
         builder: (context, state) => const PlaylistFormScreen(),
       ),
-
-      // Playlist detail
       GoRoute(
+        name: 'playlist-detail',
         path: '/playlist/:id',
         builder: (context, state) {
-          final playlist = state.extra as Playlist;
+          final playlist = state.extra as Playlist?;
+          if (playlist == null) {
+            return const Scaffold(
+                body: Center(child: Text('Playlist not found')));
+          }
           return PlaylistDetailScreen(playlist: playlist);
         },
       ),
-
-      // Edit profile
       GoRoute(
+        name: 'edit-profile',
         path: '/profile/edit',
         builder: (context, state) => const EditProfileScreen(),
       ),

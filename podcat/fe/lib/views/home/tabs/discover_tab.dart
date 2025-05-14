@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:go_router/go_router.dart';
 import 'package:podcat/blocs/category/category_bloc.dart';
 import 'package:podcat/blocs/podcast/podcast_bloc.dart';
 import 'package:podcat/core/utils/responsive_helper.dart';
@@ -9,6 +10,7 @@ import 'package:podcat/views/category/category_podcasts_screen.dart';
 import 'package:podcat/views/podcast/podcast_detail_screen.dart';
 import 'package:podcat/widgets/category_card.dart';
 import 'package:podcat/widgets/podcast_card.dart';
+import 'dart:math';
 
 class DiscoverTab extends StatelessWidget {
   const DiscoverTab({super.key});
@@ -135,7 +137,8 @@ class DiscoverTab extends StatelessWidget {
             // Sort by view count for trending
             final trendingPodcasts = List<Podcast>.from(podcasts)
               ..sort((a, b) => b.viewCount.compareTo(a.viewCount));
-            final displayPodcasts = trendingPodcasts.take(5).toList();
+            final displayPodcasts =
+                trendingPodcasts.take(min(5, trendingPodcasts.length)).toList();
 
             return SizedBox(
               height: ResponsiveHelper.isMobile(context) ? 220 : 280,
@@ -197,7 +200,8 @@ class DiscoverTab extends StatelessWidget {
             // Sort by created date for recent
             final recentPodcasts = List<Podcast>.from(podcasts)
               ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
-            final displayPodcasts = recentPodcasts.take(5).toList();
+            final displayPodcasts =
+                recentPodcasts.take(min(5, recentPodcasts.length)).toList();
 
             return ListView.builder(
               shrinkWrap: true,

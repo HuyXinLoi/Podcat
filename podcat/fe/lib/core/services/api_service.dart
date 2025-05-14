@@ -97,10 +97,23 @@ class ApiService {
     if (response.statusCode >= 200 && response.statusCode < 300) {
       if (response.body.isEmpty) return null;
       return json.decode(response.body);
-    } else if (response.statusCode == 401) {
-      throw Exception('Unauthorized');
     } else {
-      throw Exception('API Error: ${response.statusCode} - ${response.body}');
+      final errorBody =
+          response.body.isNotEmpty ? json.decode(response.body) : {};
+      final message = errorBody['message'] ?? 'Unknown error';
+
+      switch (response.statusCode) {
+        case 400:
+          throw Exception('Bad request: $message');
+        case 401:
+          throw Exception('Unauthorized: $message');
+        case 403:
+          throw Exception('Forbidden: $message');
+        case 404:
+          throw Exception('Not found: $message');
+        default:
+          throw Exception('Error ${response.statusCode}: $message');
+      }
     }
   }
 }

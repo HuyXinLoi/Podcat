@@ -86,5 +86,8 @@
   "createFailed": "Failed to create playlist",
   "noPlaylistsFound": "No playlists found",
   "notLoggedIn": "You are not logged in",
-  "userProfileNotFound": "User profile not found"
+  "userProfileNotFound": "User profile not found",
+  "invalidCredentials": "Invalid username or password.",
+  "missingFields": "Please fill in all fields correctly.",
+  "serverError": "Login failed. Please try again later."
 }

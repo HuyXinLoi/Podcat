@@ -5,6 +5,7 @@ import 'package:podcat/core/utils/app_localizations.dart';
 import 'package:podcat/core/utils/responsive_helper.dart';
 import 'package:podcat/models/playlist.dart';
 import 'package:podcat/models/podcast.dart';
+import 'package:podcat/repositories/podcast_repository.dart';
 import 'package:podcat/views/podcast/podcast_detail_screen.dart';
 
 class PlaylistDetailScreen extends StatefulWidget {

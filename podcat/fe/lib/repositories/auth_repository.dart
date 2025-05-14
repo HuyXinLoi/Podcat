@@ -23,10 +23,17 @@ class AuthRepository {
         await _saveToken(response['token']);
         return response['token'];
       }
-      return null;
+      throw Exception('Login failed: No token received');
     } catch (e) {
-      print('Login error: $e');
-      throw Exception('Login failed: $e');
+      final errorMessage = e.toString();
+
+      if (errorMessage.contains('Unauthorized')) {
+        throw Exception('Invalid username or password');
+      } else if (errorMessage.contains('Bad request')) {
+        throw Exception('Please fill in all fields correctly');
+      } else {
+        throw Exception('Login failed. Please try again later.');
+      }
     }
   }
 

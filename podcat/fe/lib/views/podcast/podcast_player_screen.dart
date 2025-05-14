@@ -68,12 +68,16 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
   }
 
   void _saveProgress(int progress) {
-    context.read<PodcastBloc>().add(
-          SaveProgress(
-            podcastId: widget.podcast.id,
-            progress: progress,
-          ),
-        );
+    try {
+      context.read<PodcastBloc>().add(
+            SaveProgress(
+              podcastId: widget.podcast.id,
+              progress: progress,
+            ),
+          );
+    } catch (e) {
+      print('Error saving progress: $e');
+    }
   }
 
   @override
@@ -257,7 +261,9 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
           Slider(
             value: _position.inSeconds.toDouble(),
             min: 0,
-            max: _duration.inSeconds.toDouble(),
+            max: _duration.inSeconds.toDouble() > 0
+                ? _duration.inSeconds.toDouble()
+                : 1,
             onChanged: (value) {
               final position = Duration(seconds: value.toInt());
               _audioPlayer.seek(position);

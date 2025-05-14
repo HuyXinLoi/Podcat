@@ -4,6 +4,7 @@ import 'package:podcat/blocs/podcast/podcast_bloc.dart';
 import 'package:podcat/core/utils/app_localizations.dart';
 import 'package:podcat/core/utils/responsive_helper.dart';
 import 'package:podcat/models/category.dart';
+import 'package:podcat/repositories/podcast_repository.dart';
 import 'package:podcat/views/podcast/podcast_detail_screen.dart';
 
 class CategoryPodcastsScreen extends StatefulWidget {
@@ -23,9 +24,17 @@ class _CategoryPodcastsScreenState extends State<CategoryPodcastsScreen> {
   }
 
   void _loadPodcasts() {
-    context.read<PodcastBloc>().add(
-          LoadPodcastsByCategory(categoryId: widget.category.id),
-        );
+    // Create a new PodcastBloc specifically for this screen
+    final podcastRepository = RepositoryProvider.of<PodcastRepository>(context);
+    final podcastBloc = PodcastBloc(podcastRepository: podcastRepository);
+
+    // Add the event to load podcasts by category
+    podcastBloc.add(LoadPodcastsByCategory(categoryId: widget.category.id));
+
+    // Replace the existing BlocProvider with a new one
+    BlocProvider.of<PodcastBloc>(context).add(
+      LoadPodcastsByCategory(categoryId: widget.category.id),
+    );
   }
 
   @override
@@ -57,7 +66,7 @@ class _CategoryPodcastsScreenState extends State<CategoryPodcastsScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    context.tr('no_podcasts_in_category'),
+                    context.tr('noPodcastsInCategory'),
                     style: TextStyle(
                       fontSize: ResponsiveHelper.getFontSize(context, 18),
                       color: Colors.grey[600],

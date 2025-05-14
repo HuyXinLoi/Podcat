@@ -75,8 +75,12 @@ class ProfileTab extends StatelessWidget {
                       : null,
                   child: user.avatarUrl == null
                       ? Text(
-                          user.name?.substring(0, 1).toUpperCase() ??
-                              user.username.substring(0, 1).toUpperCase(),
+                          (user.name != null && user.name!.isNotEmpty
+                                  ? user.name!.substring(0, 1)
+                                  : user.username.isNotEmpty
+                                      ? user.username.substring(0, 1)
+                                      : '?')
+                              .toUpperCase(),
                           style: TextStyle(
                             fontSize: ResponsiveHelper.getFontSize(context, 40),
                           ),

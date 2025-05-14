@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:podcat/blocs/favorite/favorite_bloc.dart';
 import 'package:podcat/blocs/playlist/playlist_bloc.dart';
+import 'package:podcat/blocs/podcast/podcast_bloc.dart';
 import 'package:podcat/core/utils/responsive_helper.dart';
 import 'package:podcat/views/playlist/playlist_detail_screen.dart';
 import 'package:podcat/views/playlist/playlist_form_screen.dart';

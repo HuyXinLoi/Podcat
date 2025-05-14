@@ -52,6 +52,7 @@ class PodcastBloc extends Bloc<PodcastEvent, PodcastState> {
       emit(state.copyWith(
         status: PodcastStatus.loaded,
         currentPodcast: podcast,
+        comments: [], // Initialize with empty list to avoid null
       ));
       add(LoadComments(podcastId: event.id));
     } catch (e) {
@@ -176,8 +177,11 @@ class PodcastBloc extends Bloc<PodcastEvent, PodcastState> {
         comments: comments,
       ));
     } catch (e) {
+      // Don't overwrite the comments if there's an error
       emit(state.copyWith(
         error: e.toString(),
+        comments:
+            state.comments ?? [], // Keep existing comments or use empty list
       ));
     }
   }
