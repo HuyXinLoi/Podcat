@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:podcat/blocs/podcast/podcast_bloc.dart';
-import 'package:podcat/core/utils/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:podcat/core/utils/responsive_helper.dart';
 import 'package:podcat/models/podcast.dart';
 
@@ -98,10 +98,11 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
   @override
   Widget build(BuildContext context) {
     final isDesktop = ResponsiveHelper.isDesktop(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.tr('now_playing')),
+        title: Text(l10n.nowPlaying),
       ),
       body: isDesktop ? _buildDesktopLayout() : _buildMobileLayout(),
     );

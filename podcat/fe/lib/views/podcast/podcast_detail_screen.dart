@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:podcat/core/utils/app_localizations.dart';
 import 'package:podcat/core/utils/responsive_helper.dart';
 import 'package:podcat/widgets/comment_list.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../blocs/favorite/favorite_bloc.dart';
 import '../../blocs/podcast/podcast_bloc.dart';
@@ -72,6 +72,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return BlocConsumer<PodcastBloc, PodcastState>(
       listener: (context, state) {
         if (state.status == PodcastStatus.loaded &&
@@ -84,14 +85,14 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
       builder: (context, state) {
         if (state.status == PodcastStatus.loading) {
           return Scaffold(
-            appBar: AppBar(title: Text(context.tr('loading'))),
+            appBar: AppBar(title: Text(l10n.loading)),
             body: const Center(child: CircularProgressIndicator()),
           );
         }
 
         if (state.status == PodcastStatus.error) {
           return Scaffold(
-            appBar: AppBar(title: Text(context.tr('error'))),
+            appBar: AppBar(title: Text(l10n.error)),
             body:
                 Center(child: Text('Error: ${state.error ?? "Unknown error"}')),
           );
@@ -100,8 +101,8 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
         final podcast = state.currentPodcast;
         if (podcast == null) {
           return Scaffold(
-            appBar: AppBar(title: Text(context.tr('notFound'))),
-            body: Center(child: Text(context.tr('podcastNotFound'))),
+            appBar: AppBar(title: Text(l10n.notFound)),
+            body: Center(child: Text(l10n.podcastNotFound)),
           );
         }
 
@@ -177,13 +178,14 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   }
 
   Widget _buildActionButtons(Podcast podcast) {
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         ElevatedButton.icon(
           onPressed: () => _playPodcast(podcast),
           icon: const Icon(Icons.play_arrow),
-          label: Text(context.tr('play')),
+          label: Text(l10n.play),
         ),
       ],
     );
@@ -197,6 +199,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   }
 
   Widget _buildCommentSection() {
+    final l10n = AppLocalizations.of(context)!;
     if (ResponsiveHelper.isDesktop(context)) {
       return const SizedBox
           .shrink(); // Comments are in the right panel for desktop
@@ -206,7 +209,8 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          context.tr('comments'),
+          //
+          l10n.comments,
           style: TextStyle(
             fontSize: ResponsiveHelper.getFontSize(context, 18),
             fontWeight: FontWeight.bold,
@@ -219,7 +223,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
               child: TextField(
                 controller: _commentController,
                 decoration: InputDecoration(
-                  hintText: context.tr('addComment'),
+                  hintText: l10n.addComment,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -251,7 +255,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
               return Center(
                 child: Padding(
                   padding: EdgeInsets.all(16.0),
-                  child: Text(context.tr('noCommentsYet')),
+                  child: Text(l10n.userProfileNotFound),
                 ),
               );
             }

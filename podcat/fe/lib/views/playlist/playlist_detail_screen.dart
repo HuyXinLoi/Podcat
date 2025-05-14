@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:podcat/blocs/podcast/podcast_bloc.dart';
-import 'package:podcat/core/utils/app_localizations.dart';
 import 'package:podcat/core/utils/responsive_helper.dart';
 import 'package:podcat/models/playlist.dart';
 import 'package:podcat/models/podcast.dart';
-import 'package:podcat/repositories/podcast_repository.dart';
 import 'package:podcat/views/podcast/podcast_detail_screen.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PlaylistDetailScreen extends StatefulWidget {
   final Playlist playlist;
@@ -61,6 +60,7 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.playlist.name),
@@ -72,6 +72,7 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
   }
 
   Widget _buildPodcastList() {
+    final l10n = AppLocalizations.of(context)!;
     if (widget.playlist.podcastIds.isEmpty) {
       return Center(
         child: Column(
@@ -84,7 +85,8 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              context.tr('empty_playlist'),
+              // context.tr('empty_playlist'),
+              l10n.emptyPlaylist,
               style: TextStyle(
                 fontSize: ResponsiveHelper.getFontSize(context, 18),
                 color: Colors.grey[600],
@@ -92,7 +94,8 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              context.tr('add_podcasts_to_playlist'),
+              // context.tr('add_podcasts_to_playlist'),
+              l10n.addPodcastsToPlaylist,
               style: TextStyle(
                 fontSize: ResponsiveHelper.getFontSize(context, 14),
                 color: Colors.grey[500],

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:podcat/blocs/playlist/playlist_bloc.dart';
-import 'package:podcat/core/utils/app_localizations.dart';
 import 'package:podcat/core/utils/responsive_helper.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PlaylistFormScreen extends StatefulWidget {
   const PlaylistFormScreen({super.key});
@@ -31,24 +31,26 @@ class _PlaylistFormScreenState extends State<PlaylistFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isDesktop = ResponsiveHelper.isDesktop(context);
     final isTablet = ResponsiveHelper.isTablet(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.tr('create_playlist')),
+        title: Text(l10n.createPlaylist),
       ),
       body: BlocListener<PlaylistBloc, PlaylistState>(
         listener: (context, state) {
           if (state.status == PlaylistStatus.loaded) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(context.tr('playlist_created'))),
+              SnackBar(content: Text(l10n.playlistCreated)),
             );
             Navigator.pop(context);
           } else if (state.status == PlaylistStatus.error) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                  content: Text(state.error ?? context.tr('create_failed'))),
+                content: Text(state.error ?? l10n.createFailed),
+              ),
             );
           }
         },
@@ -78,7 +80,8 @@ class _PlaylistFormScreenState extends State<PlaylistFormScreen> {
                       SizedBox(
                           height: ResponsiveHelper.isMobile(context) ? 24 : 32),
                       Text(
-                        context.tr('create_playlist'),
+                        //
+                        l10n.createPlaylist,
                         style: TextStyle(
                           fontSize: ResponsiveHelper.getFontSize(context, 24),
                           fontWeight: FontWeight.bold,
@@ -90,14 +93,14 @@ class _PlaylistFormScreenState extends State<PlaylistFormScreen> {
                       TextFormField(
                         controller: _nameController,
                         decoration: InputDecoration(
-                          labelText: context.tr('playlist_name'),
+                          labelText: l10n.playlistName,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return context.tr('please_enter_playlist_name');
+                            return l10n.notFound;
                           }
                           return null;
                         },
@@ -114,7 +117,7 @@ class _PlaylistFormScreenState extends State<PlaylistFormScreen> {
                                     state.status == PlaylistStatus.loading
                                         ? null
                                         : () => Navigator.pop(context),
-                                child: Text(context.tr('cancel')),
+                                child: Text(l10n.cancel),
                               ),
                               const SizedBox(width: 16),
                               ElevatedButton(
@@ -131,7 +134,7 @@ class _PlaylistFormScreenState extends State<PlaylistFormScreen> {
                                           color: Colors.white,
                                         ),
                                       )
-                                    : Text(context.tr('create')),
+                                    : Text(l10n.create),
                               ),
                             ],
                           );

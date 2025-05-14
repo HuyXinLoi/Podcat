@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:podcat/blocs/auth/auth_bloc.dart';
 import 'package:podcat/blocs/podcast/podcast_bloc.dart';
-import 'package:podcat/core/utils/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:podcat/core/utils/responsive_helper.dart';
 
 class CommentList extends StatelessWidget {
@@ -13,6 +13,7 @@ class CommentList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return BlocBuilder<PodcastBloc, PodcastState>(
       builder: (context, state) {
         final comments = state.comments;
@@ -25,7 +26,7 @@ class CommentList extends StatelessWidget {
           return Center(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Text(context.tr('no_comments_yet')),
+              child: Text(l10n.noCommentsYet),
             ),
           );
         }
@@ -72,7 +73,7 @@ class CommentList extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        context.tr('you'),
+                        l10n.you,
                         style: TextStyle(
                           fontSize: ResponsiveHelper.getFontSize(context, 12),
                         ),
@@ -122,17 +123,18 @@ class CommentList extends StatelessWidget {
   }
 
   String _formatDate(BuildContext context, DateTime date) {
+    final l10n = AppLocalizations.of(context)!;
     final now = DateTime.now();
     final difference = now.difference(date);
 
     if (difference.inDays > 0) {
-      return '${difference.inDays} ${difference.inDays == 1 ? context.tr('day_ago') : context.tr('days_ago')}';
+      return '${difference.inDays} ${difference.inDays == 1 ? l10n.dayAgo : l10n.daysAgo}';
     } else if (difference.inHours > 0) {
-      return '${difference.inHours} ${difference.inHours == 1 ? context.tr('hour_ago') : context.tr('hours_ago')}';
+      return '${difference.inHours} ${difference.inHours == 1 ? l10n.hourAgo : l10n.hoursAgo}';
     } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes} ${difference.inMinutes == 1 ? context.tr('minute_ago') : context.tr('minutes_ago')}';
+      return '${difference.inMinutes} ${difference.inMinutes == 1 ? l10n.minuteAgo : l10n.minutesAgo}';
     } else {
-      return context.tr('just_now');
+      return l10n.justNow;
     }
   }
 }

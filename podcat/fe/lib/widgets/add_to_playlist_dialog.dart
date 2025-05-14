@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:podcat/blocs/playlist/playlist_bloc.dart';
-import 'package:podcat/core/utils/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:podcat/core/utils/responsive_helper.dart';
 import 'package:podcat/views/playlist/playlist_form_screen.dart';
 
@@ -13,6 +13,7 @@ class AddToPlaylistDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Load playlists if not already loaded
+    final l10n = AppLocalizations.of(context)!;
     final playlistState = context.read<PlaylistBloc>().state;
     if (playlistState.playlists == null) {
       context.read<PlaylistBloc>().add(LoadPlaylists());
@@ -27,7 +28,7 @@ class AddToPlaylistDialog extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              context.tr('add_to_playlist'),
+              l10n.addToPlaylist,
               style: TextStyle(
                 fontSize: ResponsiveHelper.getFontSize(context, 20),
                 fontWeight: FontWeight.bold,
@@ -52,7 +53,7 @@ class AddToPlaylistDialog extends StatelessWidget {
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
                         children: [
-                          Text(context.tr('no_playlists_found')),
+                          Text(l10n.noPlaylistsFound),
                           const SizedBox(height: 16),
                           ElevatedButton(
                             onPressed: () {
@@ -64,7 +65,7 @@ class AddToPlaylistDialog extends StatelessWidget {
                                 ),
                               );
                             },
-                            child: Text(context.tr('create_playlist')),
+                            child: Text(l10n.createPlaylist),
                           ),
                         ],
                       ),
@@ -89,7 +90,7 @@ class AddToPlaylistDialog extends StatelessWidget {
                           ),
                         ),
                         subtitle: Text(
-                          '${playlist.podcastIds.length} ${context.tr('podcasts')}',
+                          '${playlist.podcastIds.length} ${l10n.podcasts}',
                           style: TextStyle(
                             fontSize: ResponsiveHelper.getFontSize(context, 14),
                           ),
@@ -112,8 +113,8 @@ class AddToPlaylistDialog extends StatelessWidget {
                             Navigator.pop(context);
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text(
-                                    '${context.tr('added_to')} ${playlist.name}'),
+                                content:
+                                    Text('${l10n.addedTo} ${playlist.name}'),
                               ),
                             );
                           }
@@ -132,7 +133,7 @@ class AddToPlaylistDialog extends StatelessWidget {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: Text(context.tr('cancel')),
+                  child: Text(l10n.cancel),
                 ),
                 const SizedBox(width: 8),
                 ElevatedButton(
@@ -145,7 +146,7 @@ class AddToPlaylistDialog extends StatelessWidget {
                       ),
                     );
                   },
-                  child: Text(context.tr('new_playlist')),
+                  child: Text(l10n.newPlaylist),
                 ),
               ],
             ),

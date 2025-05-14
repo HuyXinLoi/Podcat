@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:podcat/core/utils/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:podcat/core/utils/responsive_helper.dart';
 
 import '../../blocs/auth/auth_bloc.dart';
@@ -57,16 +57,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isDesktop = ResponsiveHelper.isDesktop(context);
     final isTablet = ResponsiveHelper.isTablet(context);
     final user = context.watch<AuthBloc>().state.user;
 
     if (user == null) {
       return Scaffold(
-        appBar: AppBar(title: Text(context.tr('edit_profile'))),
+        appBar: AppBar(title: Text(l10n.editProfile)),
         body: Center(
           child: Text(
-            context.tr('user_not_found'),
+            l10n.userProfileNotFound,
             style: TextStyle(
               fontSize: ResponsiveHelper.getFontSize(context, 18),
             ),
@@ -77,19 +78,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.tr('edit_profile')),
+        title: Text(l10n.editProfile),
       ),
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state.status == AuthStatus.authenticated) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(context.tr('profile_updated'))),
+              SnackBar(content: Text(l10n.profileUpdated)),
             );
             Navigator.pop(context);
           } else if (state.status == AuthStatus.error) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                  content: Text(state.error ?? context.tr('update_failed'))),
+              SnackBar(content: Text(state.error ?? l10n.updateFailed)),
             );
           }
         },
@@ -135,7 +135,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     SizedBox(
                         height: ResponsiveHelper.isMobile(context) ? 24 : 32),
                     Text(
-                      context.tr('name'),
+                      l10n.name,
                       style: TextStyle(
                         fontSize: ResponsiveHelper.getFontSize(context, 16),
                         fontWeight: FontWeight.bold,
@@ -145,7 +145,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     TextFormField(
                       controller: _nameController,
                       decoration: InputDecoration(
-                        hintText: context.tr('enter_name'),
+                        hintText: l10n.enterName,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -154,7 +154,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     SizedBox(
                         height: ResponsiveHelper.isMobile(context) ? 16 : 24),
                     Text(
-                      context.tr('bio'),
+                      l10n.bio,
                       style: TextStyle(
                         fontSize: ResponsiveHelper.getFontSize(context, 16),
                         fontWeight: FontWeight.bold,
@@ -164,7 +164,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     TextFormField(
                       controller: _bioController,
                       decoration: InputDecoration(
-                        hintText: context.tr('enter_bio'),
+                        hintText: l10n.enterBio,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -174,7 +174,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     SizedBox(
                         height: ResponsiveHelper.isMobile(context) ? 16 : 24),
                     Text(
-                      context.tr('avatar_url'),
+                      l10n.avatarUrl,
                       style: TextStyle(
                         fontSize: ResponsiveHelper.getFontSize(context, 16),
                         fontWeight: FontWeight.bold,
@@ -184,7 +184,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     TextFormField(
                       controller: _avatarUrlController,
                       decoration: InputDecoration(
-                        hintText: context.tr('enter_avatar_url'),
+                        hintText: l10n.enterAvatarUrl,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -217,7 +217,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     ),
                                   )
                                 : Text(
-                                    context.tr('save'),
+                                    l10n.save,
                                     style: TextStyle(
                                       fontSize: ResponsiveHelper.getFontSize(
                                           context, 16),

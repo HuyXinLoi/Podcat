@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:podcat/blocs/podcast/podcast_bloc.dart';
-import 'package:podcat/core/utils/app_localizations.dart';
 import 'package:podcat/core/utils/responsive_helper.dart';
 import 'package:podcat/models/category.dart';
 import 'package:podcat/repositories/podcast_repository.dart';
 import 'package:podcat/views/podcast/podcast_detail_screen.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CategoryPodcastsScreen extends StatefulWidget {
   final Category category;
@@ -39,6 +39,7 @@ class _CategoryPodcastsScreenState extends State<CategoryPodcastsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.category.name),
@@ -66,7 +67,8 @@ class _CategoryPodcastsScreenState extends State<CategoryPodcastsScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    context.tr('noPodcastsInCategory'),
+                    // context.tr('noPodcastsInCategory'),
+                    l10n.noPodcastsInCategory,
                     style: TextStyle(
                       fontSize: ResponsiveHelper.getFontSize(context, 18),
                       color: Colors.grey[600],
