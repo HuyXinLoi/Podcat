@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:podcat/blocs/favorite/favorite_bloc.dart';
 import 'package:podcat/blocs/playlist/playlist_bloc.dart';
-import 'package:podcat/blocs/podcast/podcast_bloc.dart';
 import 'package:podcat/core/utils/responsive_helper.dart';
 import 'package:podcat/views/playlist/playlist_detail_screen.dart';
 import 'package:podcat/views/playlist/playlist_form_screen.dart';
@@ -44,9 +43,13 @@ class _LibraryTabState extends State<LibraryTab>
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.library),
+        title: Text(
+          l10n.library,
+        ),
         bottom: TabBar(
           controller: _tabController,
+          labelColor: Colors.blue,
+          unselectedLabelColor: Colors.grey,
           tabs: [
             Tab(text: l10n.favorites),
             Tab(text: l10n.playlists),
@@ -109,7 +112,7 @@ class _LibraryTabState extends State<LibraryTab>
                     l10n.noFavoritesYet,
                     style: TextStyle(
                       fontSize: ResponsiveHelper.getFontSize(context, 18),
-                      color: Colors.grey[600],
+                      color: Colors.grey[400],
                     ),
                   ),
                   const SizedBox(height: 8),

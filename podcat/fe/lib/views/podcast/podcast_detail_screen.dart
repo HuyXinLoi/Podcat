@@ -117,7 +117,8 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   }
 
   Widget _buildMobileLayout(Podcast podcast) {
-    return Column(
+    return SingleChildScrollView(
+        child: Column(
       children: [
         _buildAppBar(podcast),
         _buildPodcastInfo(podcast),
@@ -125,7 +126,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
         _buildDescription(podcast),
         _buildCommentSection(),
       ],
-    );
+    ));
   }
 
   Widget _buildDesktopLayout(Podcast podcast) {
@@ -193,7 +194,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
 
   Widget _buildDescription(Podcast podcast) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(10.0),
       child: Text(podcast.description ?? ''),
     );
   }
@@ -201,69 +202,69 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   Widget _buildCommentSection() {
     final l10n = AppLocalizations.of(context)!;
     if (ResponsiveHelper.isDesktop(context)) {
-      return const SizedBox
-          .shrink(); // Comments are in the right panel for desktop
+      return const SizedBox.shrink();
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          //
-          l10n.comments,
-          style: TextStyle(
-            fontSize: ResponsiveHelper.getFontSize(context, 18),
-            fontWeight: FontWeight.bold,
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.comments,
+            style: TextStyle(
+              fontSize: ResponsiveHelper.getFontSize(context, 18),
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: _commentController,
-                decoration: InputDecoration(
-                  hintText: l10n.addComment,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _commentController,
+                  decoration: InputDecoration(
+                    hintText: l10n.addComment,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
+                  maxLines: 2,
                 ),
-                maxLines: 2,
               ),
-            ),
-            const SizedBox(width: 8),
-            IconButton(
-              onPressed: _addComment,
-              icon: const Icon(Icons.send),
-              color: Theme.of(context).colorScheme.primary,
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        BlocBuilder<PodcastBloc, PodcastState>(
-          builder: (context, state) {
-            if (state.comments == null) {
-              return const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: CircularProgressIndicator(),
-                ),
-              );
-            }
+              const SizedBox(width: 8),
+              IconButton(
+                onPressed: _addComment,
+                icon: const Icon(Icons.send),
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          BlocBuilder<PodcastBloc, PodcastState>(
+            builder: (context, state) {
+              if (state.comments == null) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              }
 
-            if (state.comments!.isEmpty) {
-              return Center(
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text(l10n.userProfileNotFound),
-                ),
-              );
-            }
-
-            return CommentList(podcastId: widget.podcastId);
-          },
-        ),
-      ],
+              if (state.comments!.isEmpty) {
+                return Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Text(l10n.userProfileNotFound),
+                  ),
+                );
+              }
+              return CommentList(podcastId: widget.podcastId);
+            },
+          ),
+        ],
+      ),
     );
   }
 }

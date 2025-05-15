@@ -53,10 +53,8 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
         });
       });
 
-      // Save progress periodically
       _audioPlayer.positionStream.listen((position) {
         if (position.inSeconds % 10 == 0) {
-          // Save every 10 seconds
           _saveProgress(position.inSeconds);
         }
       });
