@@ -9,6 +9,7 @@ class AppTheme {
   static const Color darkBackgroundColor = Color(0xFF121212);
 
   static ThemeData lightTheme = ThemeData(
+    fontFamily: 'Roboto',
     useMaterial3: true,
     colorScheme: ColorScheme.light(
       primary: primaryColor,
@@ -55,6 +56,7 @@ class AppTheme {
   );
 
   static ThemeData darkTheme = ThemeData(
+    fontFamily: 'Roboto',
     useMaterial3: true,
     colorScheme: ColorScheme.dark(
       primary: primaryColor,

@@ -185,7 +185,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
       children: [
         ElevatedButton.icon(
           onPressed: () => _playPodcast(podcast),
-          icon: const Icon(Icons.play_arrow),
+          icon: const Icon(Icons.play_arrow, color: Colors.white),
           label: Text(l10n.play),
         ),
       ],
