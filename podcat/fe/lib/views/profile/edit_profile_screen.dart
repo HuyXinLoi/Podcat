@@ -1,12 +1,8 @@
-import 'dart:io';
-import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:podcat/core/utils/responsive_helper.dart';
+import 'package:podcat/widgets/image_upload_widget.dart';
 
 import '../../blocs/auth/auth_bloc.dart';
 
@@ -21,9 +17,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _bioController = TextEditingController();
-  final _avatarUrlController = TextEditingController();
-  File? _selectedImage;
-  bool _isUploading = false;
+  String _avatarUrl = '';
 
   @override
   void initState() {
@@ -36,7 +30,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (user != null) {
       _nameController.text = user.name ?? '';
       _bioController.text = user.bio ?? '';
-      _avatarUrlController.text = user.avatarUrl ?? '';
+      _avatarUrl = user.avatarUrl ?? '';
     }
   }
 
@@ -44,7 +38,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void dispose() {
     _nameController.dispose();
     _bioController.dispose();
-    _avatarUrlController.dispose();
     super.dispose();
   }
 
@@ -55,64 +48,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               profileData: {
                 'name': _nameController.text.trim(),
                 'bio': _bioController.text.trim(),
-                'avatarUrl': _avatarUrlController.text.trim(),
+                'avatarUrl': _avatarUrl,
               },
             ),
           );
     }
   }
 
-  Future<void> _pickAndUploadImage() async {
-    final ImagePicker picker = ImagePicker();
-
-    try {
-      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-
-      if (image == null) return;
-
-      setState(() {
-        _selectedImage = File(image.path);
-        _isUploading = true;
-      });
-
-      // Upload to Cloudinary
-      final request = http.MultipartRequest(
-        'POST',
-        Uri.parse('https://podcat-4.onrender.com/api/upload/cloud'),
-      );
-
-      request.files.add(
-        await http.MultipartFile.fromPath(
-          'file',
-          image.path,
-        ),
-      );
-
-      final response = await request.send();
-      final responseData = await response.stream.bytesToString();
-
-      if (response.statusCode == 200) {
-        // The API is directly returning the URL as a string, not JSON
-        setState(() {
-          _avatarUrlController.text = responseData.trim();
-          _isUploading = false;
-        });
-      } else {
-        setState(() {
-          _isUploading = false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to upload image')),
-        );
-      }
-    } catch (e) {
-      setState(() {
-        _isUploading = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
-    }
+  void _onImageUploaded(String imageUrl) {
+    setState(() {
+      _avatarUrl = imageUrl;
+    });
   }
 
   @override
@@ -241,84 +187,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            controller: _avatarUrlController,
-                            decoration: InputDecoration(
-                              hintText: l10n.enterAvatarUrl,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            readOnly: true,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        ElevatedButton.icon(
-                          onPressed: _isUploading ? null : _pickAndUploadImage,
-                          icon: _isUploading
-                              ? const SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child:
-                                      CircularProgressIndicator(strokeWidth: 2),
-                                )
-                              : const Icon(Icons.upload),
-                          label: Text(l10n.upload),
-                        ),
-                      ],
+                    ImageUploadWidget(
+                      initialImageUrl: user.avatarUrl,
+                      onImageUploaded: _onImageUploaded,
+                      uploadButtonLabel: l10n.upload,
                     ),
-                    const SizedBox(height: 16),
-                    if (_selectedImage != null ||
-                        (user.avatarUrl != null && user.avatarUrl!.isNotEmpty))
-                      Center(
-                        child: Container(
-                          width: 150,
-                          height: 150,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: _selectedImage != null
-                              ? ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.file(
-                                    _selectedImage!,
-                                    fit: BoxFit.cover,
-                                  ),
-                                )
-                              : ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.network(
-                                    user.avatarUrl!,
-                                    fit: BoxFit.cover,
-                                    loadingBuilder:
-                                        (context, child, loadingProgress) {
-                                      if (loadingProgress == null) return child;
-                                      return Center(
-                                        child: CircularProgressIndicator(
-                                          value: loadingProgress
-                                                      .expectedTotalBytes !=
-                                                  null
-                                              ? loadingProgress
-                                                      .cumulativeBytesLoaded /
-                                                  loadingProgress
-                                                      .expectedTotalBytes!
-                                              : null,
-                                        ),
-                                      );
-                                    },
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return const Center(
-                                        child: Icon(Icons.error),
-                                      );
-                                    },
-                                  ),
-                                ),
-                        ),
-                      ),
                     SizedBox(
                         height: ResponsiveHelper.isMobile(context) ? 32 : 40),
                     BlocBuilder<AuthBloc, AuthState>(

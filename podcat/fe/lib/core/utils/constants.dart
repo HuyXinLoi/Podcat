@@ -30,6 +30,9 @@ class ApiConstants {
 
   // Comment endpoints
   static const String comments = '/comments';
+
+  // Upload endpoints
+  static const String upload = 'https://podcat-4.onrender.com/api/upload/cloud';
 }
 
 class StorageConstants {
