@@ -1,0 +1,11 @@
+# MongoDB
+MONGODB_URI=mongodb+srv://huyhodinh0909:imgin0810@cluster0.0qw8pzn.mongodb.net/podcastdb?retryWrites=true&w=majority&appName=Cluster0
+
+# JWT Configuration
+JWT_SECRET=your_jwt_secret_key_should_be_at_least_32_characters_long
+JWT_EXPIRATION=86400000
+
+# Cloudinary Configuration
+CLOUDINARY_CLOUD_NAME=dn47avxex
+CLOUDINARY_API_KEY=244293182637597
+CLOUDINARY_API_SECRET=DbyjUYD7xdROy3PxSl1Oz_Js1Ew
