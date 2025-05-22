@@ -93,13 +93,40 @@ class ApiService {
     }
   }
 
+  // dynamic _handleResponse(http.Response response) {
+  //   if (response.statusCode >= 200 && response.statusCode < 300) {
+  //     if (response.body.isEmpty) return null;
+  //     return json.decode(response.body);
+  //   } else {
+  //     final errorBody =
+  //         response.body.isNotEmpty ? json.decode(response.body) : {};
+  //     final message = errorBody['message'] ?? 'Unknown error';
+
+  //     switch (response.statusCode) {
+  //       case 400:
+  //         throw Exception('Bad request: $message');
+  //       case 401:
+  //         throw Exception('Unauthorized: $message');
+  //       case 403:
+  //         throw Exception('Forbidden: $message');
+  //       case 404:
+  //         throw Exception('Not found: $message');
+  //       default:
+  //         throw Exception('Error ${response.statusCode}: $message');
+  //     }
+  //   }
+  // }
   dynamic _handleResponse(http.Response response) {
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      if (response.body.isEmpty) return null;
-      return json.decode(response.body);
+      if (response.bodyBytes.isEmpty) return null;
+
+      final decoded = utf8.decode(response.bodyBytes);
+      return json.decode(decoded);
     } else {
-      final errorBody =
-          response.body.isNotEmpty ? json.decode(response.body) : {};
+      final decodedError = response.bodyBytes.isNotEmpty
+          ? utf8.decode(response.bodyBytes)
+          : '{}';
+      final errorBody = json.decode(decodedError);
       final message = errorBody['message'] ?? 'Unknown error';
 
       switch (response.statusCode) {

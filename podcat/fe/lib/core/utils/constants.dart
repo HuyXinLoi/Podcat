@@ -1,5 +1,7 @@
 class ApiConstants {
-  static const String baseUrl = 'http://10.0.2.2:8080/api';
+  // static const String baseUrl = 'http://10.0.2.2:8080/api';
+
+  static const String baseUrl = 'https://podcat-4.onrender.com/api';
 
   // Auth endpoints
   static const String login = '/auth/login';
@@ -28,6 +30,9 @@ class ApiConstants {
 
   // Comment endpoints
   static const String comments = '/comments';
+
+  // Upload endpoints
+  static const String upload = 'https://podcat-4.onrender.com/api/upload/cloud';
 }
 
 class StorageConstants {

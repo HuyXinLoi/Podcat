@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:podcat/core/utils/responsive_helper.dart';
+import 'package:podcat/widgets/image_upload_widget.dart';
 
 import '../../blocs/auth/auth_bloc.dart';
 
@@ -16,7 +17,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _bioController = TextEditingController();
-  final _avatarUrlController = TextEditingController();
+  String _avatarUrl = '';
 
   @override
   void initState() {
@@ -29,7 +30,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (user != null) {
       _nameController.text = user.name ?? '';
       _bioController.text = user.bio ?? '';
-      _avatarUrlController.text = user.avatarUrl ?? '';
+      _avatarUrl = user.avatarUrl ?? '';
     }
   }
 
@@ -37,7 +38,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void dispose() {
     _nameController.dispose();
     _bioController.dispose();
-    _avatarUrlController.dispose();
     super.dispose();
   }
 
@@ -48,11 +48,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               profileData: {
                 'name': _nameController.text.trim(),
                 'bio': _bioController.text.trim(),
-                'avatarUrl': _avatarUrlController.text.trim(),
+                'avatarUrl': _avatarUrl,
               },
             ),
           );
     }
+  }
+
+  void _onImageUploaded(String imageUrl) {
+    setState(() {
+      _avatarUrl = imageUrl;
+    });
   }
 
   @override
@@ -181,14 +187,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    TextFormField(
-                      controller: _avatarUrlController,
-                      decoration: InputDecoration(
-                        hintText: l10n.enterAvatarUrl,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
+                    ImageUploadWidget(
+                      initialImageUrl: user.avatarUrl,
+                      onImageUploaded: _onImageUploaded,
+                      uploadButtonLabel: l10n.upload,
                     ),
                     SizedBox(
                         height: ResponsiveHelper.isMobile(context) ? 32 : 40),

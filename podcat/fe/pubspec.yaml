@@ -52,6 +52,7 @@ dependencies:
   audio_session:
   path_provider:
   flutter_dotenv:
+  image_picker: ^1.1.2
   
 
 dev_dependencies:
