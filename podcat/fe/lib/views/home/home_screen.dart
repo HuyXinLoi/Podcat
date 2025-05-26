@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:podcat/blocs/auth/auth_bloc.dart';
 import 'package:podcat/blocs/category/category_bloc.dart';
 import 'package:podcat/blocs/podcast/podcast_bloc.dart';
+import 'package:podcat/widgets/mini_player.dart';
 import 'package:podcat/views/home/tabs/discover_tab.dart';
 import 'package:podcat/views/home/tabs/library_tab.dart';
 import 'package:podcat/views/home/tabs/profile_tab.dart';
@@ -59,7 +60,14 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       },
       child: Scaffold(
-        body: widget.child ?? _tabs[_currentIndex],
+        body: Column(
+          children: [
+            Expanded(
+              child: widget.child ?? _tabs[_currentIndex],
+            ),
+            const MiniPlayer(),
+          ],
+        ),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _currentIndex,
           onTap: (index) {
@@ -67,7 +75,6 @@ class _HomeScreenState extends State<HomeScreen> {
               _currentIndex = index;
             });
 
-            // Navigate using GoRouter
             switch (index) {
               case 0:
                 context.go('/discover');

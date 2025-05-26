@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:go_router/go_router.dart';
 import 'package:podcat/blocs/auth/auth_bloc.dart';
 import 'package:podcat/blocs/language/language_bloc.dart';
 import 'package:podcat/core/utils/responsive_helper.dart';
@@ -21,12 +22,13 @@ class ProfileTab extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const EditProfileScreen(),
-                ),
-              );
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (_) => const EditProfileScreen(),
+              //   ),
+              // );
+              context.push('/profile/edit');
             },
           ),
         ],
@@ -46,10 +48,11 @@ class ProfileTab extends StatelessWidget {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (_) => const LoginScreen()),
-                      );
+                      // Navigator.pushReplacement(
+                      //   context,
+                      //   MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      // );
+                      context.pushReplacement('/login');
                     },
                     child: Text(l10n.login),
                   ),

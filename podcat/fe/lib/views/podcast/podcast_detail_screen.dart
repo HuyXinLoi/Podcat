@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:podcat/blocs/audio_player/audio_player_bloc.dart';
 import 'package:podcat/core/utils/responsive_helper.dart';
 import 'package:podcat/widgets/comment_list.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -68,6 +69,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
 
   void _playPodcast(Podcast podcast) {
     context.push('/podcast/${podcast.id}/play', extra: podcast);
+    context.read<AudioPlayerBloc>().add(PlayPodcast(podcast: podcast));
   }
 
   @override

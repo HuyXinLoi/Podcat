@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:podcat/blocs/audio_player/audio_player_bloc.dart';
 import 'package:podcat/blocs/podcast/podcast_bloc.dart';
 import 'package:podcat/core/utils/responsive_helper.dart';
 import 'package:podcat/models/category.dart';
@@ -137,12 +139,14 @@ class _CategoryPodcastsScreenState extends State<CategoryPodcastsScreen> {
             ),
           ),
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => PodcastDetailScreen(podcastId: podcast.id),
-              ),
-            );
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(
+            //     builder: (_) => PodcastDetailScreen(podcastId: podcast.id),
+            //   ),
+            // );
+            // context.push('/podcast/${podcast.id}');
+            context.read<AudioPlayerBloc>().add(PlayPodcast(podcast: podcast));
           },
         );
       },
@@ -163,12 +167,13 @@ class _CategoryPodcastsScreenState extends State<CategoryPodcastsScreen> {
         final podcast = podcasts[index];
         return GestureDetector(
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => PodcastDetailScreen(podcastId: podcast.id),
-              ),
-            );
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(
+            //     builder: (_) => PodcastDetailScreen(podcastId: podcast.id),
+            //   ),
+            // );
+            context.push('/podcast/${podcast.id}');
           },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

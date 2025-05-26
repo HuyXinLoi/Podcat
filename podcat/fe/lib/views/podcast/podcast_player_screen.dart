@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:just_audio/just_audio.dart';
+import 'package:just_audio/just_audio.dart' as ja;
+import 'package:podcat/blocs/audio_player/audio_player_bloc.dart';
 import 'package:podcat/blocs/podcast/podcast_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:podcat/core/utils/responsive_helper.dart';
@@ -16,52 +17,19 @@ class PodcastPlayerScreen extends StatefulWidget {
 }
 
 class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
-  final AudioPlayer _audioPlayer = AudioPlayer();
-  bool _isPlaying = false;
-  Duration _duration = Duration.zero;
-  Duration _position = Duration.zero;
-  double _playbackSpeed = 1.0;
-
   @override
   void initState() {
     super.initState();
-    _initAudioPlayer();
+    _initOrContinuePlayback();
   }
 
-  Future<void> _initAudioPlayer() async {
-    try {
-      await _audioPlayer.setUrl(widget.podcast.audioUrl);
-      _audioPlayer.playerStateStream.listen((state) {
-        if (state.playing != _isPlaying) {
-          setState(() {
-            _isPlaying = state.playing;
-          });
-        }
-      });
-
-      _audioPlayer.durationStream.listen((duration) {
-        if (duration != null) {
-          setState(() {
-            _duration = duration;
-          });
-        }
-      });
-
-      _audioPlayer.positionStream.listen((position) {
-        setState(() {
-          _position = position;
-        });
-      });
-
-      _audioPlayer.positionStream.listen((position) {
-        if (position.inSeconds % 10 == 0) {
-          _saveProgress(position.inSeconds);
-        }
-      });
-
-      _audioPlayer.play();
-    } catch (e) {
-      print('Error initializing audio player: $e');
+  void _initOrContinuePlayback() {
+    final audioPlayerBloc = context.read<AudioPlayerBloc>();
+    final currentState = audioPlayerBloc.state;
+    if (currentState.hasCurrentPodcast &&
+        currentState.currentPodcast!.id == widget.podcast.id) {
+    } else {
+      audioPlayerBloc.add(PlayPodcast(podcast: widget.podcast));
     }
   }
 
@@ -80,8 +48,11 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
 
   @override
   void dispose() {
-    _saveProgress(_position.inSeconds);
-    _audioPlayer.dispose();
+    final currentPositionSeconds =
+        context.read<AudioPlayerBloc>().state.position.inSeconds;
+    if (currentPositionSeconds > 0) {
+      _saveProgress(currentPositionSeconds);
+    }
     super.dispose();
   }
 
@@ -102,11 +73,59 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
       appBar: AppBar(
         title: Text(l10n.nowPlaying),
       ),
-      body: isDesktop ? _buildDesktopLayout() : _buildMobileLayout(),
+      body: BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
+        builder: (context, audioState) {
+          if (!audioState.hasCurrentPodcast ||
+              audioState.currentPodcast!.id != widget.podcast.id) {
+            if (audioState.isLoading &&
+                audioState.currentPodcast?.id == widget.podcast.id) {
+              return const Center(child: CircularProgressIndicator());
+            }
+          }
+          final displayPodcast = audioState.hasCurrentPodcast &&
+                  audioState.currentPodcast!.id == widget.podcast.id
+              ? audioState.currentPodcast!
+              : widget.podcast;
+          final isPlaying = audioState.hasCurrentPodcast &&
+                  audioState.currentPodcast!.id == widget.podcast.id
+              ? audioState.isPlaying
+              : false;
+          final position = audioState.hasCurrentPodcast &&
+                  audioState.currentPodcast!.id == widget.podcast.id
+              ? audioState.position
+              : Duration.zero;
+          final duration = audioState.hasCurrentPodcast &&
+                  audioState.currentPodcast!.id == widget.podcast.id
+              ? audioState.duration
+              : Duration.zero;
+          final isLoading = audioState.hasCurrentPodcast &&
+                  audioState.currentPodcast!.id == widget.podcast.id
+              ? audioState.isLoading
+              : false;
+
+          if (isPlaying &&
+              position.inSeconds > 0 &&
+              position.inSeconds % 10 == 0) {
+            _saveProgress(position.inSeconds);
+          }
+
+          return isDesktop
+              ? _buildDesktopLayout(displayPodcast, isPlaying, position,
+                  duration, isLoading, l10n)
+              : _buildMobileLayout(displayPodcast, isPlaying, position,
+                  duration, isLoading, l10n);
+        },
+      ),
     );
   }
 
-  Widget _buildMobileLayout() {
+  Widget _buildMobileLayout(
+      Podcast podcastDetails,
+      bool isPlaying,
+      Duration position,
+      Duration duration,
+      bool isLoading,
+      AppLocalizations l10n) {
     return Column(
       children: [
         Expanded(
@@ -117,7 +136,7 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(16),
                   child: Image.network(
-                    widget.podcast.imageUrl,
+                    podcastDetails.imageUrl,
                     width: MediaQuery.of(context).size.width * 0.7,
                     height: MediaQuery.of(context).size.width * 0.7,
                     fit: BoxFit.cover,
@@ -139,7 +158,7 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Text(
-                    widget.podcast.title,
+                    podcastDetails.title,
                     style: TextStyle(
                       fontSize: ResponsiveHelper.getFontSize(context, 20),
                       fontWeight: FontWeight.bold,
@@ -148,9 +167,9 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                if (widget.podcast.categoryName != null)
+                if (podcastDetails.categoryName != null)
                   Text(
-                    widget.podcast.categoryName!,
+                    podcastDetails.categoryName!,
                     style: TextStyle(
                       fontSize: ResponsiveHelper.getFontSize(context, 16),
                       color: Theme.of(context).colorScheme.primary,
@@ -160,12 +179,18 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
             ),
           ),
         ),
-        _buildPlayerControls(),
+        _buildPlayerControls(isPlaying, position, duration, isLoading, l10n),
       ],
     );
   }
 
-  Widget _buildDesktopLayout() {
+  Widget _buildDesktopLayout(
+      Podcast podcastDetails,
+      bool isPlaying,
+      Duration position,
+      Duration duration,
+      bool isLoading,
+      AppLocalizations l10n) {
     return Row(
       children: [
         Expanded(
@@ -175,7 +200,7 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(16),
               child: Image.network(
-                widget.podcast.imageUrl,
+                podcastDetails.imageUrl,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return Container(
@@ -200,16 +225,16 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  widget.podcast.title,
+                  podcastDetails.title,
                   style: TextStyle(
                     fontSize: ResponsiveHelper.getFontSize(context, 28),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 8),
-                if (widget.podcast.categoryName != null)
+                if (podcastDetails.categoryName != null)
                   Text(
-                    widget.podcast.categoryName!,
+                    podcastDetails.categoryName!,
                     style: TextStyle(
                       fontSize: ResponsiveHelper.getFontSize(context, 18),
                       color: Theme.of(context).colorScheme.primary,
@@ -217,7 +242,7 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
                   ),
                 const SizedBox(height: 16),
                 Text(
-                  widget.podcast.description,
+                  podcastDetails.description,
                   style: TextStyle(
                     fontSize: ResponsiveHelper.getFontSize(context, 16),
                   ),
@@ -225,7 +250,8 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 32),
-                _buildPlayerControls(),
+                _buildPlayerControls(
+                    isPlaying, position, duration, isLoading, l10n),
               ],
             ),
           ),
@@ -234,7 +260,11 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
     );
   }
 
-  Widget _buildPlayerControls() {
+  Widget _buildPlayerControls(bool isPlaying, Duration position,
+      Duration duration, bool isLoading, AppLocalizations l10n) {
+    final audioPlayerBloc = context.read<AudioPlayerBloc>();
+    final currentSpeed = audioPlayerBloc.state.playbackSpeed;
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -253,19 +283,23 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(_formatDuration(_position)),
-              Text(_formatDuration(_duration)),
+              Text(_formatDuration(position)),
+              Text(_formatDuration(duration)),
             ],
           ),
           Slider(
-            value: _position.inSeconds.toDouble(),
+            value: position.inSeconds.toDouble().clamp(
+                0.0,
+                duration.inSeconds.toDouble() > 0
+                    ? duration.inSeconds.toDouble()
+                    : 1.0),
             min: 0,
-            max: _duration.inSeconds.toDouble() > 0
-                ? _duration.inSeconds.toDouble()
-                : 1,
+            max: duration.inSeconds.toDouble() > 0
+                ? duration.inSeconds.toDouble()
+                : 1.0,
             onChanged: (value) {
-              final position = Duration(seconds: value.toInt());
-              _audioPlayer.seek(position);
+              audioPlayerBloc
+                  .add(SeekTo(position: Duration(seconds: value.toInt())));
             },
           ),
           Row(
@@ -275,34 +309,52 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
                 icon: const Icon(Icons.replay_10),
                 iconSize: ResponsiveHelper.isMobile(context) ? 32 : 40,
                 onPressed: () {
-                  _audioPlayer.seek(
-                    Duration(seconds: _position.inSeconds - 10),
-                  );
+                  final newPosition = position - const Duration(seconds: 10);
+                  audioPlayerBloc.add(SeekTo(
+                      position: newPosition.isNegative
+                          ? Duration.zero
+                          : newPosition));
                 },
               ),
               const SizedBox(width: 16),
-              IconButton(
-                icon: Icon(_isPlaying
-                    ? Icons.pause_circle_filled
-                    : Icons.play_circle_filled),
-                iconSize: ResponsiveHelper.isMobile(context) ? 64 : 80,
-                color: Theme.of(context).colorScheme.primary,
-                onPressed: () {
-                  if (_isPlaying) {
-                    _audioPlayer.pause();
-                  } else {
-                    _audioPlayer.play();
-                  }
-                },
-              ),
+              if (isLoading)
+                SizedBox(
+                    width: ResponsiveHelper.isMobile(context) ? 64 : 80,
+                    height: ResponsiveHelper.isMobile(context) ? 64 : 80,
+                    child: Center(
+                        child: CircularProgressIndicator(
+                      color: Theme.of(context).colorScheme.primary,
+                    )))
+              else
+                IconButton(
+                  icon: Icon(isPlaying
+                      ? Icons.pause_circle_filled
+                      : Icons.play_circle_filled),
+                  iconSize: ResponsiveHelper.isMobile(context) ? 64 : 80,
+                  color: Theme.of(context).colorScheme.primary,
+                  onPressed: () {
+                    if (isPlaying) {
+                      audioPlayerBloc.add(PausePodcast());
+                    } else {
+                      if (audioPlayerBloc.state.processingState ==
+                          ja.ProcessingState.completed) {
+                        audioPlayerBloc
+                            .add(PlayPodcast(podcast: widget.podcast));
+                      } else {
+                        audioPlayerBloc.add(ResumePodcast());
+                      }
+                    }
+                  },
+                ),
               const SizedBox(width: 16),
               IconButton(
                 icon: const Icon(Icons.forward_30),
                 iconSize: ResponsiveHelper.isMobile(context) ? 32 : 40,
                 onPressed: () {
-                  _audioPlayer.seek(
-                    Duration(seconds: _position.inSeconds + 30),
-                  );
+                  final newPosition = position + const Duration(seconds: 30);
+                  audioPlayerBloc.add(SeekTo(
+                      position:
+                          newPosition > duration ? duration : newPosition));
                 },
               ),
             ],
@@ -314,7 +366,7 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
               const Icon(Icons.speed, size: 20),
               const SizedBox(width: 8),
               DropdownButton<double>(
-                value: _playbackSpeed,
+                value: currentSpeed,
                 items: [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0]
                     .map((speed) => DropdownMenuItem(
                           value: speed,
@@ -323,10 +375,7 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
                     .toList(),
                 onChanged: (value) {
                   if (value != null) {
-                    setState(() {
-                      _playbackSpeed = value;
-                    });
-                    _audioPlayer.setSpeed(value);
+                    audioPlayerBloc.add(SetSpeed(speed: value));
                   }
                 },
               ),

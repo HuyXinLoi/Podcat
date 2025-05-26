@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:podcat/blocs/podcast/podcast_bloc.dart';
 import 'package:podcat/core/utils/responsive_helper.dart';
 import 'package:podcat/models/playlist.dart';
@@ -171,12 +172,13 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
             ),
           ),
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => PodcastDetailScreen(podcastId: podcast.id),
-              ),
-            );
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(
+            //     builder: (_) => PodcastDetailScreen(podcastId: podcast.id),
+            //   ),
+            // );
+            context.push('podcast/${podcast.id}');
           },
         );
       },

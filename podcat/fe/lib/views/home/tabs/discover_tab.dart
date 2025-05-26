@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
+import 'package:podcat/blocs/audio_player/audio_player_bloc.dart';
 import 'package:podcat/blocs/category/category_bloc.dart';
 import 'package:podcat/blocs/podcast/podcast_bloc.dart';
 import 'package:podcat/core/utils/responsive_helper.dart';
@@ -87,12 +88,17 @@ class DiscoverTab extends StatelessWidget {
                   return CategoryCard(
                     category: category,
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              CategoryPodcastsScreen(category: category),
-                        ),
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (_) =>
+                      //         CategoryPodcastsScreen(category: category),
+                      //   ),
+                      // );
+                      context.pushNamed(
+                        'category',
+                        pathParameters: {'id': category.id},
+                        extra: category,
                       );
                     },
                   );
@@ -150,13 +156,19 @@ class DiscoverTab extends StatelessWidget {
                   return PodcastCard(
                     podcast: podcast,
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              PodcastDetailScreen(podcastId: podcast.id),
-                        ),
-                      );
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (_) =>
+                      //         PodcastDetailScreen(podcastId: podcast.id),
+                      //   ),
+                      // );
+                      // context.push(
+                      //   '/podcast/${podcast.id}',
+                      // );
+                      context
+                          .read<AudioPlayerBloc>()
+                          .add(PlayPodcast(podcast: podcast));
                     },
                   );
                 },
@@ -250,13 +262,19 @@ class DiscoverTab extends StatelessWidget {
                     ),
                   ),
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) =>
-                            PodcastDetailScreen(podcastId: podcast.id),
-                      ),
-                    );
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (_) =>
+                    //         PodcastDetailScreen(podcastId: podcast.id),
+                    //   ),
+                    // );
+                    // context.push(
+                    //   '/podcast/${podcast.id}',
+                    // );
+                    context
+                        .read<AudioPlayerBloc>()
+                        .add(PlayPodcast(podcast: podcast));
                   },
                 );
               },
