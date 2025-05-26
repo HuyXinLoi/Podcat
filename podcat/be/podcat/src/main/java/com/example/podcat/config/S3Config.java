@@ -23,9 +23,9 @@ public class S3Config {
 
     @Bean
     public AmazonS3 amazonS3() {
-        if (accessKey.isEmpty() || secretKey.isEmpty()) {
-            return null;
-        }
+        // if (accessKey.isEmpty() || secretKey.isEmpty()) {
+        //     return null;
+        // }
         
         BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
         return AmazonS3ClientBuilder.standard()
