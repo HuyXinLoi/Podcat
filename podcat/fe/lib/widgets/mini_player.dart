@@ -162,18 +162,23 @@ class _MiniPlayerState extends State<MiniPlayer>
                               }
                             }
                           },
-                          icon: state.isLoading
-                              ? const SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: CircularProgressIndicator(
-                                      strokeWidth: 2.5),
-                                )
-                              : Icon(
-                                  state.isPlaying
-                                      ? Icons.pause_circle_filled_rounded
-                                      : Icons.play_circle_fill_rounded,
-                                ),
+                          // icon: state.isLoading
+                          //     ? const SizedBox(
+                          //         width: 24,
+                          //         height: 24,
+                          //         child: CircularProgressIndicator(
+                          //             strokeWidth: 2.5),
+                          //       )
+                          //     : Icon(
+                          //         state.isPlaying
+                          //             ? Icons.pause_circle_filled_rounded
+                          //             : Icons.play_circle_fill_rounded,
+                          //       ),
+                          icon: Icon(
+                            state.isPlaying
+                                ? Icons.pause_circle_filled_rounded
+                                : Icons.play_circle_fill_rounded,
+                          ),
                           color: Theme.of(context).colorScheme.primary,
                         ),
                         IconButton(

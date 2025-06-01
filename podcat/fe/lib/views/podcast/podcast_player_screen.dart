@@ -317,35 +317,34 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
                 },
               ),
               const SizedBox(width: 16),
-              if (isLoading)
-                SizedBox(
-                    width: ResponsiveHelper.isMobile(context) ? 64 : 80,
-                    height: ResponsiveHelper.isMobile(context) ? 64 : 80,
-                    child: Center(
-                        child: CircularProgressIndicator(
-                      color: Theme.of(context).colorScheme.primary,
-                    )))
-              else
-                IconButton(
-                  icon: Icon(isPlaying
-                      ? Icons.pause_circle_filled
-                      : Icons.play_circle_filled),
-                  iconSize: ResponsiveHelper.isMobile(context) ? 64 : 80,
-                  color: Theme.of(context).colorScheme.primary,
-                  onPressed: () {
-                    if (isPlaying) {
-                      audioPlayerBloc.add(PausePodcast());
+              // if (isLoading)
+              //   SizedBox(
+              //       width: ResponsiveHelper.isMobile(context) ? 64 : 80,
+              //       height: ResponsiveHelper.isMobile(context) ? 64 : 80,
+              //       child: Center(
+              //           child: CircularProgressIndicator(
+              //         color: Theme.of(context).colorScheme.primary,
+              //       )))
+              // else
+              IconButton(
+                icon: Icon(isPlaying
+                    ? Icons.pause_circle_filled
+                    : Icons.play_circle_filled),
+                iconSize: ResponsiveHelper.isMobile(context) ? 64 : 80,
+                color: Theme.of(context).colorScheme.primary,
+                onPressed: () {
+                  if (isPlaying) {
+                    audioPlayerBloc.add(PausePodcast());
+                  } else {
+                    if (audioPlayerBloc.state.processingState ==
+                        ja.ProcessingState.completed) {
+                      audioPlayerBloc.add(PlayPodcast(podcast: widget.podcast));
                     } else {
-                      if (audioPlayerBloc.state.processingState ==
-                          ja.ProcessingState.completed) {
-                        audioPlayerBloc
-                            .add(PlayPodcast(podcast: widget.podcast));
-                      } else {
-                        audioPlayerBloc.add(ResumePodcast());
-                      }
+                      audioPlayerBloc.add(ResumePodcast());
                     }
-                  },
-                ),
+                  }
+                },
+              ),
               const SizedBox(width: 16),
               IconButton(
                 icon: const Icon(Icons.forward_30),

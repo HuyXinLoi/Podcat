@@ -22,18 +22,13 @@ class _CategoryPodcastsScreenState extends State<CategoryPodcastsScreen> {
   @override
   void initState() {
     super.initState();
-    _loadPodcasts();
+    //_loadPodcasts();
   }
 
   void _loadPodcasts() {
-    // Create a new PodcastBloc specifically for this screen
     final podcastRepository = RepositoryProvider.of<PodcastRepository>(context);
     final podcastBloc = PodcastBloc(podcastRepository: podcastRepository);
-
-    // Add the event to load podcasts by category
     podcastBloc.add(LoadPodcastsByCategory(categoryId: widget.category.id));
-
-    // Replace the existing BlocProvider with a new one
     BlocProvider.of<PodcastBloc>(context).add(
       LoadPodcastsByCategory(categoryId: widget.category.id),
     );
@@ -42,51 +37,55 @@ class _CategoryPodcastsScreenState extends State<CategoryPodcastsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.category.name),
-      ),
-      body: BlocBuilder<PodcastBloc, PodcastState>(
-        builder: (context, state) {
-          if (state.status == PodcastStatus.loading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+    final podcastRepository = RepositoryProvider.of<PodcastRepository>(context);
+    return BlocProvider(
+        create: (_) => PodcastBloc(podcastRepository: podcastRepository)
+          ..add(LoadPodcastsByCategory(categoryId: widget.category.id)),
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(widget.category.name),
+          ),
+          body: BlocBuilder<PodcastBloc, PodcastState>(
+            builder: (context, state) {
+              if (state.status == PodcastStatus.loading) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-          if (state.status == PodcastStatus.error) {
-            return Center(child: Text('Error: ${state.error}'));
-          }
+              if (state.status == PodcastStatus.error) {
+                return Center(child: Text('Error: ${state.error}'));
+              }
 
-          final podcasts = state.podcasts?.content;
-          if (podcasts == null || podcasts.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.headphones,
-                    size: ResponsiveHelper.getFontSize(context, 70),
-                    color: Colors.grey[400],
+              final podcasts = state.podcasts?.content;
+              if (podcasts == null || podcasts.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.headphones,
+                        size: ResponsiveHelper.getFontSize(context, 70),
+                        color: Colors.grey[400],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        // context.tr('noPodcastsInCategory'),
+                        l10n.noPodcastsInCategory,
+                        style: TextStyle(
+                          fontSize: ResponsiveHelper.getFontSize(context, 18),
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 16),
-                  Text(
-                    // context.tr('noPodcastsInCategory'),
-                    l10n.noPodcastsInCategory,
-                    style: TextStyle(
-                      fontSize: ResponsiveHelper.getFontSize(context, 18),
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
+                );
+              }
 
-          return ResponsiveHelper.isDesktop(context)
-              ? _buildGridView(podcasts)
-              : _buildListView(podcasts);
-        },
-      ),
-    );
+              return ResponsiveHelper.isDesktop(context)
+                  ? _buildGridView(podcasts)
+                  : _buildListView(podcasts);
+            },
+          ),
+        ));
   }
 
   Widget _buildListView(List podcasts) {

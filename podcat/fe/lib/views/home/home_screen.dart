@@ -42,10 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadInitialData() async {
-    // Load categories
     context.read<CategoryBloc>().add(LoadCategories());
-
-    // Load podcasts
     context.read<PodcastBloc>().add(const LoadPodcasts());
   }
 

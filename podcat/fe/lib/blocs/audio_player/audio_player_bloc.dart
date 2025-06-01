@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:podcat/models/podcast.dart';
 
 part 'audio_player_event.dart';
@@ -51,9 +52,24 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
       emit(state.copyWith(
         currentPodcast: event.podcast,
         isLoading: true,
+        position: Duration.zero,
+        playbackSpeed: 1.0,
       ));
 
-      await _audioPlayer.setUrl(event.podcast.audioUrl);
+      await _audioPlayer.setSpeed(1.0);
+      await _audioPlayer.seek(Duration.zero);
+      //await _audioPlayer.setUrl(event.podcast.audioUrl);
+      await _audioPlayer.setAudioSource(
+        AudioSource.uri(
+          Uri.parse(event.podcast.audioUrl),
+          tag: MediaItem(
+            id: event.podcast.id,
+            title: event.podcast.title,
+            //artist: event.podcast.author,
+            artUri: Uri.parse(event.podcast.imageUrl),
+          ),
+        ),
+      );
       await _audioPlayer.play();
 
       emit(state.copyWith(
