@@ -48,12 +48,12 @@ dependencies:
   cached_network_image: ^3.4.1
   flutter_secure_storage: ^9.2.4
   http:
-  just_audio:
+  just_audio: ^0.9.35
   audio_session:
   path_provider:
   flutter_dotenv:
   image_picker: ^1.1.2
-  audio_service: ^0.18.18
+  audio_service: ^0.18.12
   just_audio_background:
   
 

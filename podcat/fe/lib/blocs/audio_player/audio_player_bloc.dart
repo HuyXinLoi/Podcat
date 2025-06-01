@@ -12,6 +12,9 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
 
   AudioPlayerBloc() : super(const AudioPlayerState()) {
     on<PlayPodcast>(_onPlayPodcast);
+    on<PlayPlaylist>(_onPlayPlaylist);
+    on<NextPodcast>(_onNextPodcast);
+    on<PreviousPodcast>(_onPreviousPodcast);
     on<PausePodcast>(_onPausePodcast);
     on<ResumePodcast>(_onResumePodcast);
     on<StopPodcast>(_onStopPodcast);
@@ -44,33 +47,39 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
         add(UpdateDuration(duration));
       }
     });
+
+    // Auto play next when current song ends
+    _audioPlayer.playerStateStream.listen((playerState) {
+      if (playerState.processingState == ProcessingState.completed) {
+        if (state.hasNextPodcast) {
+          add(NextPodcast());
+        }
+      }
+    });
   }
 
   Future<void> _onPlayPodcast(
       PlayPodcast event, Emitter<AudioPlayerState> emit) async {
     try {
+      List<Podcast> playlist = event.playlist ?? [event.podcast];
+      int currentIndex = event.startIndex ??
+          playlist.indexWhere((p) => p.id == event.podcast.id);
+
+      if (currentIndex == -1) {
+        currentIndex = 0;
+        playlist = [event.podcast, ...playlist];
+      }
+
       emit(state.copyWith(
         currentPodcast: event.podcast,
+        playlist: playlist,
+        currentIndex: currentIndex,
         isLoading: true,
         position: Duration.zero,
         playbackSpeed: 1.0,
       ));
 
-      await _audioPlayer.setSpeed(1.0);
-      await _audioPlayer.seek(Duration.zero);
-      //await _audioPlayer.setUrl(event.podcast.audioUrl);
-      await _audioPlayer.setAudioSource(
-        AudioSource.uri(
-          Uri.parse(event.podcast.audioUrl),
-          tag: MediaItem(
-            id: event.podcast.id,
-            title: event.podcast.title,
-            //artist: event.podcast.author,
-            artUri: Uri.parse(event.podcast.imageUrl),
-          ),
-        ),
-      );
-      await _audioPlayer.play();
+      await _playCurrentPodcast(event.podcast);
 
       emit(state.copyWith(
         isLoading: false,
@@ -82,6 +91,92 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
         error: e.toString(),
       ));
     }
+  }
+
+  Future<void> _onPlayPlaylist(
+      PlayPlaylist event, Emitter<AudioPlayerState> emit) async {
+    if (event.playlist.isEmpty) return;
+
+    final podcast = event.playlist[event.startIndex];
+    add(PlayPodcast(
+      podcast: podcast,
+      playlist: event.playlist,
+      startIndex: event.startIndex,
+    ));
+  }
+
+  Future<void> _onNextPodcast(
+      NextPodcast event, Emitter<AudioPlayerState> emit) async {
+    if (!state.hasNextPodcast) return;
+
+    final nextIndex = state.currentIndex + 1;
+    final nextPodcast = state.playlist[nextIndex];
+
+    try {
+      emit(state.copyWith(
+        currentPodcast: nextPodcast,
+        currentIndex: nextIndex,
+        isLoading: true,
+        position: Duration.zero,
+      ));
+
+      await _playCurrentPodcast(nextPodcast);
+
+      emit(state.copyWith(
+        isLoading: false,
+        isPlaying: true,
+      ));
+    } catch (e) {
+      emit(state.copyWith(
+        isLoading: false,
+        error: e.toString(),
+      ));
+    }
+  }
+
+  Future<void> _onPreviousPodcast(
+      PreviousPodcast event, Emitter<AudioPlayerState> emit) async {
+    if (!state.hasPreviousPodcast) return;
+
+    final previousIndex = state.currentIndex - 1;
+    final previousPodcast = state.playlist[previousIndex];
+
+    try {
+      emit(state.copyWith(
+        currentPodcast: previousPodcast,
+        currentIndex: previousIndex,
+        isLoading: true,
+        position: Duration.zero,
+      ));
+
+      await _playCurrentPodcast(previousPodcast);
+
+      emit(state.copyWith(
+        isLoading: false,
+        isPlaying: true,
+      ));
+    } catch (e) {
+      emit(state.copyWith(
+        isLoading: false,
+        error: e.toString(),
+      ));
+    }
+  }
+
+  Future<void> _playCurrentPodcast(Podcast podcast) async {
+    await _audioPlayer.setSpeed(state.playbackSpeed);
+    await _audioPlayer.seek(Duration.zero);
+    await _audioPlayer.setAudioSource(
+      AudioSource.uri(
+        Uri.parse(podcast.audioUrl),
+        tag: MediaItem(
+          id: podcast.id,
+          title: podcast.title,
+          artUri: Uri.parse(podcast.imageUrl),
+        ),
+      ),
+    );
+    await _audioPlayer.play();
   }
 
   Future<void> _onPausePodcast(

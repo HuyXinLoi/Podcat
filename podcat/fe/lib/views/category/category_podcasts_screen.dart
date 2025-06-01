@@ -5,6 +5,7 @@ import 'package:podcat/blocs/audio_player/audio_player_bloc.dart';
 import 'package:podcat/blocs/podcast/podcast_bloc.dart';
 import 'package:podcat/core/utils/responsive_helper.dart';
 import 'package:podcat/models/category.dart';
+import 'package:podcat/models/podcast.dart';
 import 'package:podcat/repositories/podcast_repository.dart';
 import 'package:podcat/views/podcast/podcast_detail_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -88,7 +89,7 @@ class _CategoryPodcastsScreenState extends State<CategoryPodcastsScreen> {
         ));
   }
 
-  Widget _buildListView(List podcasts) {
+  Widget _buildListView(List<Podcast> podcasts) {
     return ListView.builder(
       padding: ResponsiveHelper.getPadding(context),
       itemCount: podcasts.length,
@@ -145,7 +146,13 @@ class _CategoryPodcastsScreenState extends State<CategoryPodcastsScreen> {
             //   ),
             // );
             // context.push('/podcast/${podcast.id}');
-            context.read<AudioPlayerBloc>().add(PlayPodcast(podcast: podcast));
+            context.read<AudioPlayerBloc>().add(
+                  PlayPodcast(
+                    podcast: podcast,
+                    playlist: podcasts,
+                    startIndex: index,
+                  ),
+                );
           },
         );
       },

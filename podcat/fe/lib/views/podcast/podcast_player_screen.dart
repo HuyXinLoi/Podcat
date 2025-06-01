@@ -82,26 +82,14 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
               return const Center(child: CircularProgressIndicator());
             }
           }
-          final displayPodcast = audioState.hasCurrentPodcast &&
-                  audioState.currentPodcast!.id == widget.podcast.id
+          final displayPodcast = audioState.hasCurrentPodcast
               ? audioState.currentPodcast!
               : widget.podcast;
-          final isPlaying = audioState.hasCurrentPodcast &&
-                  audioState.currentPodcast!.id == widget.podcast.id
-              ? audioState.isPlaying
-              : false;
-          final position = audioState.hasCurrentPodcast &&
-                  audioState.currentPodcast!.id == widget.podcast.id
-              ? audioState.position
-              : Duration.zero;
-          final duration = audioState.hasCurrentPodcast &&
-                  audioState.currentPodcast!.id == widget.podcast.id
-              ? audioState.duration
-              : Duration.zero;
-          final isLoading = audioState.hasCurrentPodcast &&
-                  audioState.currentPodcast!.id == widget.podcast.id
-              ? audioState.isLoading
-              : false;
+
+          final isPlaying = audioState.isPlaying;
+          final position = audioState.position;
+          final duration = audioState.duration;
+          final isLoading = audioState.isLoading;
 
           if (isPlaying &&
               position.inSeconds > 0 &&
@@ -305,6 +293,18 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // Previous button
+              BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
+                builder: (context, audioState) {
+                  return IconButton(
+                    icon: const Icon(Icons.skip_previous),
+                    iconSize: ResponsiveHelper.isMobile(context) ? 32 : 40,
+                    onPressed: audioState.hasPreviousPodcast
+                        ? () => audioPlayerBloc.add(PreviousPodcast())
+                        : null,
+                  );
+                },
+              ),
               IconButton(
                 icon: const Icon(Icons.replay_10),
                 iconSize: ResponsiveHelper.isMobile(context) ? 32 : 40,
@@ -317,15 +317,6 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
                 },
               ),
               const SizedBox(width: 16),
-              // if (isLoading)
-              //   SizedBox(
-              //       width: ResponsiveHelper.isMobile(context) ? 64 : 80,
-              //       height: ResponsiveHelper.isMobile(context) ? 64 : 80,
-              //       child: Center(
-              //           child: CircularProgressIndicator(
-              //         color: Theme.of(context).colorScheme.primary,
-              //       )))
-              // else
               IconButton(
                 icon: Icon(isPlaying
                     ? Icons.pause_circle_filled
@@ -354,6 +345,18 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
                   audioPlayerBloc.add(SeekTo(
                       position:
                           newPosition > duration ? duration : newPosition));
+                },
+              ),
+              // Next button
+              BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
+                builder: (context, audioState) {
+                  return IconButton(
+                    icon: const Icon(Icons.skip_next),
+                    iconSize: ResponsiveHelper.isMobile(context) ? 32 : 40,
+                    onPressed: audioState.hasNextPodcast
+                        ? () => audioPlayerBloc.add(NextPodcast())
+                        : null,
+                  );
                 },
               ),
             ],

@@ -156,19 +156,7 @@ class DiscoverTab extends StatelessWidget {
                   return PodcastCard(
                     podcast: podcast,
                     onTap: () {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (_) =>
-                      //         PodcastDetailScreen(podcastId: podcast.id),
-                      //   ),
-                      // );
-                      // context.push(
-                      //   '/podcast/${podcast.id}',
-                      // );
-                      context
-                          .read<AudioPlayerBloc>()
-                          .add(PlayPodcast(podcast: podcast));
+                      _playPodcastFromList(displayPodcasts, index, context);
                     },
                   );
                 },
@@ -262,19 +250,7 @@ class DiscoverTab extends StatelessWidget {
                     ),
                   ),
                   onTap: () {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (_) =>
-                    //         PodcastDetailScreen(podcastId: podcast.id),
-                    //   ),
-                    // );
-                    // context.push(
-                    //   '/podcast/${podcast.id}',
-                    // );
-                    context
-                        .read<AudioPlayerBloc>()
-                        .add(PlayPodcast(podcast: podcast));
+                    _playPodcastFromList(displayPodcasts, index, context);
                   },
                 );
               },
@@ -283,5 +259,17 @@ class DiscoverTab extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  void _playPodcastFromList(
+      List<Podcast> podcasts, int index, BuildContext context) {
+    final podcast = podcasts[index];
+    context.read<AudioPlayerBloc>().add(
+          PlayPodcast(
+            podcast: podcast,
+            playlist: podcasts,
+            startIndex: index,
+          ),
+        );
   }
 }

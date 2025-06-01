@@ -2,6 +2,8 @@ part of 'audio_player_bloc.dart';
 
 class AudioPlayerState extends Equatable {
   final Podcast? currentPodcast;
+  final List<Podcast> playlist;
+  final int currentIndex;
   final bool isPlaying;
   final bool isLoading;
   final Duration position;
@@ -12,6 +14,8 @@ class AudioPlayerState extends Equatable {
 
   const AudioPlayerState({
     this.currentPodcast,
+    this.playlist = const [],
+    this.currentIndex = 0,
     this.isPlaying = false,
     this.isLoading = false,
     this.position = Duration.zero,
@@ -23,6 +27,8 @@ class AudioPlayerState extends Equatable {
 
   AudioPlayerState copyWith({
     Podcast? currentPodcast,
+    List<Podcast>? playlist,
+    int? currentIndex,
     bool? isPlaying,
     bool? isLoading,
     Duration? position,
@@ -33,6 +39,8 @@ class AudioPlayerState extends Equatable {
   }) {
     return AudioPlayerState(
       currentPodcast: currentPodcast ?? this.currentPodcast,
+      playlist: playlist ?? this.playlist,
+      currentIndex: currentIndex ?? this.currentIndex,
       isPlaying: isPlaying ?? this.isPlaying,
       isLoading: isLoading ?? this.isLoading,
       position: position ?? this.position,
@@ -44,10 +52,15 @@ class AudioPlayerState extends Equatable {
   }
 
   bool get hasCurrentPodcast => currentPodcast != null;
+  bool get hasNextPodcast =>
+      playlist.isNotEmpty && currentIndex < playlist.length - 1;
+  bool get hasPreviousPodcast => playlist.isNotEmpty && currentIndex > 0;
 
   @override
   List<Object?> get props => [
         currentPodcast,
+        playlist,
+        currentIndex,
         isPlaying,
         isLoading,
         position,

@@ -9,12 +9,35 @@ abstract class AudioPlayerEvent extends Equatable {
 
 class PlayPodcast extends AudioPlayerEvent {
   final Podcast podcast;
+  final List<Podcast>? playlist;
+  final int? startIndex;
 
-  const PlayPodcast({required this.podcast});
+  const PlayPodcast({
+    required this.podcast,
+    this.playlist,
+    this.startIndex,
+  });
 
   @override
-  List<Object> get props => [podcast];
+  List<Object> get props => [podcast, playlist ?? [], startIndex ?? 0];
 }
+
+class PlayPlaylist extends AudioPlayerEvent {
+  final List<Podcast> playlist;
+  final int startIndex;
+
+  const PlayPlaylist({
+    required this.playlist,
+    this.startIndex = 0,
+  });
+
+  @override
+  List<Object> get props => [playlist, startIndex];
+}
+
+class NextPodcast extends AudioPlayerEvent {}
+
+class PreviousPodcast extends AudioPlayerEvent {}
 
 class PausePodcast extends AudioPlayerEvent {}
 

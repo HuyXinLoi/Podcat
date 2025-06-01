@@ -53,9 +53,6 @@ class _MiniPlayerState extends State<MiniPlayer>
         }
 
         final podcast = state.currentPodcast!;
-        // final progress = state.duration.inMilliseconds > 0
-        //     ? state.position.inMilliseconds / state.duration.inMilliseconds
-        //     : 0.0;
 
         return GestureDetector(
           onTap: () {
@@ -72,22 +69,9 @@ class _MiniPlayerState extends State<MiniPlayer>
                   offset: const Offset(0, -3),
                 ),
               ],
-              // borderRadius: BorderRadius.only(
-              //   topLeft: Radius.circular(12),
-              //   topRight: Radius.circular(12),
-              // ),
             ),
             child: Column(
               children: [
-                // Thanh progress bar (đã comment)
-                // LinearProgressIndicator(
-                //   value: progress,
-                //   backgroundColor: Colors.grey[300],
-                //   valueColor: AlwaysStoppedAnimation<Color>(
-                //     Theme.of(context).colorScheme.primary,
-                //   ),
-                //   minHeight: 3,
-                // ),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
@@ -147,6 +131,20 @@ class _MiniPlayerState extends State<MiniPlayer>
                             ],
                           ),
                         ),
+                        // Previous button
+                        IconButton(
+                          iconSize: 24,
+                          onPressed: state.hasPreviousPodcast
+                              ? () => context
+                                  .read<AudioPlayerBloc>()
+                                  .add(PreviousPodcast())
+                              : null,
+                          icon: const Icon(Icons.skip_previous),
+                          color: state.hasPreviousPodcast
+                              ? Colors.grey[700]
+                              : Colors.grey[400],
+                        ),
+                        // Play/Pause button
                         IconButton(
                           iconSize: 34,
                           onPressed: () {
@@ -162,18 +160,6 @@ class _MiniPlayerState extends State<MiniPlayer>
                               }
                             }
                           },
-                          // icon: state.isLoading
-                          //     ? const SizedBox(
-                          //         width: 24,
-                          //         height: 24,
-                          //         child: CircularProgressIndicator(
-                          //             strokeWidth: 2.5),
-                          //       )
-                          //     : Icon(
-                          //         state.isPlaying
-                          //             ? Icons.pause_circle_filled_rounded
-                          //             : Icons.play_circle_fill_rounded,
-                          //       ),
                           icon: Icon(
                             state.isPlaying
                                 ? Icons.pause_circle_filled_rounded
@@ -181,6 +167,20 @@ class _MiniPlayerState extends State<MiniPlayer>
                           ),
                           color: Theme.of(context).colorScheme.primary,
                         ),
+                        // Next button
+                        IconButton(
+                          iconSize: 24,
+                          onPressed: state.hasNextPodcast
+                              ? () => context
+                                  .read<AudioPlayerBloc>()
+                                  .add(NextPodcast())
+                              : null,
+                          icon: const Icon(Icons.skip_next),
+                          color: state.hasNextPodcast
+                              ? Colors.grey[700]
+                              : Colors.grey[400],
+                        ),
+                        // Close button
                         IconButton(
                           iconSize: 26,
                           onPressed: () {
