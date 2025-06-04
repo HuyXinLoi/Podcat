@@ -21,11 +21,11 @@ import 'package:podcat/repositories/podcast_repository.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await JustAudioBackground.init(
-    androidNotificationChannelId: 'com.yourcompany.podcat.channel.audio',
-    androidNotificationChannelName: 'Podcat Audio Playback',
-    androidNotificationOngoing: true,
-  );
+  // await JustAudioBackground.init(
+  //   androidNotificationChannelId: 'com.yourcompany.podcat.channel.audio',
+  //   androidNotificationChannelName: 'Podcat Audio Playback',
+  //   androidNotificationOngoing: true,
+  // );
   runApp(const MyApp());
 }
 
@@ -79,7 +79,7 @@ class MyApp extends StatelessWidget {
         child: BlocBuilder<LanguageBloc, LanguageState>(
           builder: (context, state) {
             return MaterialApp.router(
-              title: 'Podcat',
+              title: 'DUYNH',
               debugShowCheckedModeBanner: false,
               theme: AppTheme.lightTheme,
               darkTheme: AppTheme.darkTheme,

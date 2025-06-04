@@ -26,7 +26,6 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
         size: event.size,
       );
 
-      // Update favorite status map
       final Map<String, bool> updatedStatus = Map.from(state.favoriteStatus);
       for (var podcast in favorites.content) {
         updatedStatus[podcast.id] = true;
@@ -68,15 +67,12 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
     try {
       await favoriteRepository.toggleFavorite(event.podcastId);
 
-      // Toggle local status
       final Map<String, bool> updatedStatus = Map.from(state.favoriteStatus);
       updatedStatus[event.podcastId] =
           !(updatedStatus[event.podcastId] ?? false);
 
-      // Update favorites list if needed
       if (state.favorites != null) {
         if (updatedStatus[event.podcastId] == false) {
-          // Remove from favorites
           final updatedContent = state.favorites!.content
               .where((podcast) => podcast.id != event.podcastId)
               .toList();

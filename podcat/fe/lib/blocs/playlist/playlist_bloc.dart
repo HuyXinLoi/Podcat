@@ -65,7 +65,6 @@ class PlaylistBloc extends Bloc<PlaylistEvent, PlaylistState> {
         event.podcastId,
       );
 
-      // Update the playlist in the list
       if (state.playlists != null) {
         final updatedPlaylists = state.playlists!.map((playlist) {
           if (playlist.id == event.playlistId) {

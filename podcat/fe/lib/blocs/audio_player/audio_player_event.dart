@@ -4,7 +4,7 @@ abstract class AudioPlayerEvent extends Equatable {
   const AudioPlayerEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class PlayPodcast extends AudioPlayerEvent {
@@ -12,27 +12,20 @@ class PlayPodcast extends AudioPlayerEvent {
   final List<Podcast>? playlist;
   final int? startIndex;
 
-  const PlayPodcast({
-    required this.podcast,
-    this.playlist,
-    this.startIndex,
-  });
+  const PlayPodcast({required this.podcast, this.playlist, this.startIndex});
 
   @override
-  List<Object> get props => [podcast, playlist ?? [], startIndex ?? 0];
+  List<Object?> get props => [podcast, playlist, startIndex];
 }
 
 class PlayPlaylist extends AudioPlayerEvent {
   final List<Podcast> playlist;
   final int startIndex;
 
-  const PlayPlaylist({
-    required this.playlist,
-    this.startIndex = 0,
-  });
+  const PlayPlaylist({required this.playlist, this.startIndex = 0});
 
   @override
-  List<Object> get props => [playlist, startIndex];
+  List<Object?> get props => [playlist, startIndex];
 }
 
 class NextPodcast extends AudioPlayerEvent {}
@@ -47,49 +40,37 @@ class StopPodcast extends AudioPlayerEvent {}
 
 class SeekTo extends AudioPlayerEvent {
   final Duration position;
-
   const SeekTo({required this.position});
-
   @override
-  List<Object> get props => [position];
+  List<Object?> get props => [position];
 }
 
 class SetSpeed extends AudioPlayerEvent {
   final double speed;
-
   const SetSpeed({required this.speed});
-
   @override
-  List<Object> get props => [speed];
+  List<Object?> get props => [speed];
 }
 
 class UpdatePosition extends AudioPlayerEvent {
   final Duration position;
-
   const UpdatePosition(this.position);
-
   @override
-  List<Object> get props => [position];
+  List<Object?> get props => [position];
 }
 
 class UpdateDuration extends AudioPlayerEvent {
   final Duration duration;
-
   const UpdateDuration(this.duration);
-
   @override
-  List<Object> get props => [duration];
+  List<Object?> get props => [duration];
 }
 
 class UpdatePlayerState extends AudioPlayerEvent {
   final bool isPlaying;
   final ProcessingState processingState;
-
-  const UpdatePlayerState({
-    required this.isPlaying,
-    required this.processingState,
-  });
-
+  const UpdatePlayerState(
+      {required this.isPlaying, required this.processingState});
   @override
-  List<Object> get props => [isPlaying, processingState];
+  List<Object?> get props => [isPlaying, processingState];
 }

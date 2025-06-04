@@ -38,7 +38,6 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
           final podcastBloc = context.read<PodcastBloc>();
           podcastBloc.add(LoadPodcastById(id: podcastId));
 
-          // Wait for the podcast to load
           await Future.delayed(const Duration(milliseconds: 500));
 
           final state = podcastBloc.state;

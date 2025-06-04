@@ -13,7 +13,6 @@ class AddToPlaylistDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Load playlists if not already loaded
     final l10n = AppLocalizations.of(context)!;
     final playlistState = context.read<PlaylistBloc>().state;
     if (playlistState.playlists == null) {

@@ -13,7 +13,7 @@ class OnBoardingPageState extends State<OnBoardingPage> {
   final introKey = GlobalKey<IntroductionScreenState>();
 
   void _onIntroEnd(BuildContext context) {
-    context.go('/home'); // Điều hướng đến trang login
+    context.go('/home');
   }
 
   Widget _buildImage(String assetName, [double width = 300]) {

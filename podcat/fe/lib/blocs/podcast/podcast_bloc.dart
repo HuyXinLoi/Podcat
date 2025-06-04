@@ -52,7 +52,7 @@ class PodcastBloc extends Bloc<PodcastEvent, PodcastState> {
       emit(state.copyWith(
         status: PodcastStatus.loaded,
         currentPodcast: podcast,
-        comments: [], // Initialize with empty list to avoid null
+        comments: [],
       ));
       add(LoadComments(podcastId: event.id));
     } catch (e) {
@@ -111,7 +111,6 @@ class PodcastBloc extends Bloc<PodcastEvent, PodcastState> {
     try {
       final podcast = await podcastRepository.createPodcast(event.podcastData);
 
-      // Update podcasts list if it exists
       if (state.podcasts != null) {
         final updatedContent = [podcast, ...state.podcasts!.content];
         final updatedPodcasts = state.podcasts!.copyWith(
@@ -142,7 +141,6 @@ class PodcastBloc extends Bloc<PodcastEvent, PodcastState> {
     try {
       await podcastRepository.deletePodcast(event.id);
 
-      // Update podcasts list if it exists
       if (state.podcasts != null) {
         final updatedContent = state.podcasts!.content
             .where((podcast) => podcast.id != event.id)
@@ -177,11 +175,9 @@ class PodcastBloc extends Bloc<PodcastEvent, PodcastState> {
         comments: comments,
       ));
     } catch (e) {
-      // Don't overwrite the comments if there's an error
       emit(state.copyWith(
         error: e.toString(),
-        comments:
-            state.comments ?? [], // Keep existing comments or use empty list
+        comments: state.comments ?? [],
       ));
     }
   }
