@@ -98,7 +98,7 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
         hasNext: state.hasNextPodcast,
         hasPrevious: state.hasPreviousPodcast,
       );
-    } else {}
+    }
   }
 
   Future<void> _onPlayPodcast(

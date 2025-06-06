@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:podcat/blocs/audio_player/audio_player_bloc.dart';
 import 'package:podcat/blocs/podcast/podcast_bloc.dart';
 import 'package:podcat/core/utils/responsive_helper.dart';
 import 'package:podcat/models/playlist.dart';
@@ -177,10 +178,33 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
             //     builder: (_) => PodcastDetailScreen(podcastId: podcast.id),
             //   ),
             // );
-            context.push('podcast/${podcast.id}');
+            // context.push('podcast/${podcast.id}');
+            final playablePodcasts = widget.playlist.podcastIds
+                .map((id) => _podcasts[id])
+                .whereType<Podcast>()
+                .toList();
+
+            final realIndex =
+                playablePodcasts.indexWhere((p) => p.id == podcastId);
+
+            if (realIndex != -1) {
+              _playPodcastFromList(playablePodcasts, realIndex, context);
+            }
           },
         );
       },
     );
+  }
+
+  void _playPodcastFromList(
+      List<Podcast> podcasts, int index, BuildContext context) {
+    final podcast = podcasts[index];
+    context.read<AudioPlayerBloc>().add(
+          PlayPodcast(
+            podcast: podcast,
+            playlist: podcasts,
+            startIndex: index,
+          ),
+        );
   }
 }

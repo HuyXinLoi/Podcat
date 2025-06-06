@@ -7,8 +7,6 @@ import 'package:podcat/blocs/category/category_bloc.dart';
 import 'package:podcat/blocs/podcast/podcast_bloc.dart';
 import 'package:podcat/core/utils/responsive_helper.dart';
 import 'package:podcat/models/podcast.dart';
-import 'package:podcat/views/category/category_podcasts_screen.dart';
-import 'package:podcat/views/podcast/podcast_detail_screen.dart';
 import 'package:podcat/widgets/category_card.dart';
 import 'package:podcat/widgets/podcast_card.dart';
 import 'dart:math';

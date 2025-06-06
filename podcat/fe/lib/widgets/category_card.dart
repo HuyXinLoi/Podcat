@@ -29,7 +29,7 @@ class CategoryCard extends StatelessWidget {
               width: imageSize,
               height: imageSize,
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                color: Theme.of(context).colorScheme.primary,
                 borderRadius: BorderRadius.circular(imageSize / 2),
               ),
               child: category.imageUrl != null

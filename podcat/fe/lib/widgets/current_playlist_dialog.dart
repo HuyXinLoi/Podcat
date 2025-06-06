@@ -22,7 +22,7 @@ class CurrentPlaylistDialog extends StatelessWidget {
       content: SizedBox(
         width: double.maxFinite,
         child: playlist.isEmpty
-            ? Center(child: Text('Empty Playlish'))
+            ? Center(child: Text('Empty Playlist'))
             : ListView.builder(
                 shrinkWrap: true,
                 itemCount: playlist.length,
@@ -58,7 +58,7 @@ class CurrentPlaylistDialog extends StatelessWidget {
                     onTap: () => onPlayTrack(podcast, index),
                     selected: isCurrent,
                     selectedTileColor: isCurrent
-                        ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
+                        ? Theme.of(context).colorScheme.primary
                         : null,
                   );
                 },

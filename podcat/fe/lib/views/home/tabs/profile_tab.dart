@@ -5,8 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:podcat/blocs/auth/auth_bloc.dart';
 import 'package:podcat/blocs/language/language_bloc.dart';
 import 'package:podcat/core/utils/responsive_helper.dart';
-import 'package:podcat/views/auth/login_screen.dart';
-import 'package:podcat/views/profile/edit_profile_screen.dart';
+
+import '../../../blocs/audio_player/audio_player_bloc.dart';
 
 class ProfileTab extends StatelessWidget {
   const ProfileTab({super.key});
@@ -312,6 +312,7 @@ class ProfileTab extends StatelessWidget {
 
                   if (confirmed == true) {
                     context.read<AuthBloc>().add(LogoutRequested());
+                    context.read<AudioPlayerBloc>().add(StopPodcast());
                   }
                 },
               ),

@@ -447,6 +447,8 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
             ],
           ),
           Slider(
+            activeColor: Theme.of(context).colorScheme.primary,
+            inactiveColor: Theme.of(context).colorScheme.onPrimary,
             value: (duration.inSeconds > 0)
                 ? position.inSeconds
                     .toDouble()
