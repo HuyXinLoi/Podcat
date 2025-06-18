@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:just_audio/just_audio.dart';
@@ -11,6 +13,7 @@ part 'audio_player_state.dart';
 class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
   MyAudioHandler? _audioHandler;
   bool _isChangingTrack = false;
+  Timer? _sleepTimer;
 
   AudioPlayerBloc() : super(const AudioPlayerState()) {
     on<PlayPodcast>(_onPlayPodcast);
@@ -25,6 +28,13 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
     on<UpdatePosition>(_onUpdatePosition);
     on<UpdateDuration>(_onUpdateDuration);
     on<UpdatePlayerState>(_onUpdatePlayerState);
+    on<SetSleepTimer>(_onSetSleepTimer);
+    on<CancelSleepTimer>(_onCancelSleepTimer);
+    on<SetRepeatMode>((event, emit) async {
+      await _audioHandler?.setRepeatMode(event.mode);
+      emit(state.copyWith(repeatMode: event.mode));
+    });
+
     // on<ToggleFavoriteFromNotification>(_onToggleFavoriteFromNotification);
 
     _initializeAudioService();
@@ -61,9 +71,17 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
           isPlaying: playerState.playing,
           processingState: playerState.processingState,
         ));
-        if (playerState.processingState == ProcessingState.completed &&
-            state.hasNextPodcast) {
-          add(NextPodcast());
+        // if (playerState.processingState == ProcessingState.completed &&
+        //     state.hasNextPodcast) {
+        //   add(NextPodcast());
+        // }
+        if (playerState.processingState == ProcessingState.completed) {
+          if (state.hasNextPodcast) {
+            add(NextPodcast());
+          } else if (state.repeatMode == AudioServiceRepeatMode.all &&
+              state.playlist.isNotEmpty) {
+            add(PlayPlaylist(playlist: state.playlist, startIndex: 0));
+          }
         }
       }
     });
@@ -330,6 +348,18 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
         processingState: event.processingState,
       ));
     }
+  }
+
+  void _onSetSleepTimer(SetSleepTimer event, Emitter<AudioPlayerState> emit) {
+    _sleepTimer?.cancel();
+    _sleepTimer = Timer(event.duration, () {
+      _audioHandler?.stop(); // Dừng nhạc
+    });
+  }
+
+  void _onCancelSleepTimer(
+      CancelSleepTimer event, Emitter<AudioPlayerState> emit) {
+    _sleepTimer?.cancel();
   }
 
   // void _onToggleFavoriteFromNotification( // Removed

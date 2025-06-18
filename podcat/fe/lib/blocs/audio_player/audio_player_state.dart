@@ -11,6 +11,7 @@ class AudioPlayerState extends Equatable {
   final bool isLoading;
   final ProcessingState processingState;
   final String? error;
+  final AudioServiceRepeatMode repeatMode;
   // final bool isCurrentPodcastFavorite;
 
   const AudioPlayerState({
@@ -24,6 +25,7 @@ class AudioPlayerState extends Equatable {
     this.isLoading = false,
     this.processingState = ProcessingState.idle,
     this.error,
+    this.repeatMode = AudioServiceRepeatMode.none,
     // this.isCurrentPodcastFavorite = false,
   });
 
@@ -44,6 +46,7 @@ class AudioPlayerState extends Equatable {
     ProcessingState? processingState,
     String? error,
     bool? clearError,
+    AudioServiceRepeatMode? repeatMode,
     // bool? isCurrentPodcastFavorite,
   }) {
     return AudioPlayerState(
@@ -57,6 +60,7 @@ class AudioPlayerState extends Equatable {
       isLoading: isLoading ?? this.isLoading,
       processingState: processingState ?? this.processingState,
       error: clearError == true ? null : error ?? this.error,
+      repeatMode: repeatMode ?? this.repeatMode,
       // isCurrentPodcastFavorite: isCurrentPodcastFavorite ?? this.isCurrentPodcastFavorite,
     );
   }
@@ -73,6 +77,7 @@ class AudioPlayerState extends Equatable {
         isLoading,
         processingState,
         error,
+        repeatMode,
         // isCurrentPodcastFavorite,
       ];
 }

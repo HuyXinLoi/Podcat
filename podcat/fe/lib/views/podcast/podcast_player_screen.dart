@@ -1,3 +1,4 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -165,6 +166,55 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
                   );
                 },
               ),
+              ListTile(
+                leading: const Icon(Icons.timer),
+                title: const Text('Hẹn giờ tắt nhạc'),
+                onTap: () {
+                  context.pop();
+                  _showSleepTimerDialog(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.repeat_one),
+                title: const Text('Lặp lại bài hát'),
+                onTap: () {
+                  context
+                      .read<AudioPlayerBloc>()
+                      .add(SetRepeatMode(AudioServiceRepeatMode.one));
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Đã bật lặp lại bài hát')),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.repeat),
+                title: const Text('Lặp lại danh sách phát'),
+                onTap: () {
+                  context
+                      .read<AudioPlayerBloc>()
+                      .add(SetRepeatMode(AudioServiceRepeatMode.all));
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text('Đã bật lặp lại danh sách phát')),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.repeat_on_outlined),
+                title: const Text('Tắt lặp lại'),
+                onTap: () {
+                  context
+                      .read<AudioPlayerBloc>()
+                      .add(SetRepeatMode(AudioServiceRepeatMode.none));
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Đã tắt chế độ lặp lại')),
+                  );
+                },
+              ),
+
               // Thêm các action khác nếu cần
             ],
           ),
@@ -635,6 +685,55 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
           ),
           const SizedBox(height: 8),
         ],
+      ),
+    );
+  }
+
+  void _showSleepTimerDialog(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.timer_10),
+              title: const Text('Tắt sau 10 phút'),
+              onTap: () {
+                context
+                    .read<AudioPlayerBloc>()
+                    .add(SetSleepTimer(Duration(minutes: 1)));
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Nhạc sẽ tắt sau 10 phút')),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.timer_10_sharp),
+              title: const Text('Tắt sau 30 phút'),
+              onTap: () {
+                context
+                    .read<AudioPlayerBloc>()
+                    .add(SetSleepTimer(Duration(minutes: 30)));
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Nhạc sẽ tắt sau 30 phút')),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.cancel),
+              title: const Text('Huỷ hẹn giờ'),
+              onTap: () {
+                context.read<AudioPlayerBloc>().add(CancelSleepTimer());
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Đã huỷ hẹn giờ')),
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

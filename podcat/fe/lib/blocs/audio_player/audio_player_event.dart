@@ -74,3 +74,21 @@ class UpdatePlayerState extends AudioPlayerEvent {
   @override
   List<Object?> get props => [isPlaying, processingState];
 }
+
+class SetSleepTimer extends AudioPlayerEvent {
+  final Duration duration;
+  const SetSleepTimer(this.duration);
+
+  @override
+  List<Object?> get props => [duration];
+}
+
+class CancelSleepTimer extends AudioPlayerEvent {}
+
+class SetRepeatMode extends AudioPlayerEvent {
+  final AudioServiceRepeatMode mode;
+  const SetRepeatMode(this.mode);
+
+  @override
+  List<Object?> get props => [mode];
+}

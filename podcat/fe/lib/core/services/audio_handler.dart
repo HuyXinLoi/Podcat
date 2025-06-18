@@ -223,4 +223,20 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
   Future<void> onTaskRemoved() async {
     await stop();
   }
+
+  @override
+  Future<void> setRepeatMode(AudioServiceRepeatMode repeatMode) async {
+    await super.setRepeatMode(repeatMode);
+
+    switch (repeatMode) {
+      case AudioServiceRepeatMode.one:
+        await _player.setLoopMode(LoopMode.one);
+        break;
+      case AudioServiceRepeatMode.all:
+      case AudioServiceRepeatMode.none:
+      default:
+        await _player.setLoopMode(LoopMode.off);
+        break;
+    }
+  }
 }

@@ -49,7 +49,7 @@ class CurrentPlaylistDialog extends StatelessWidget {
                         fontWeight:
                             isCurrent ? FontWeight.bold : FontWeight.normal,
                         color: isCurrent
-                            ? Theme.of(context).colorScheme.primary
+                            ? Theme.of(context).colorScheme.onPrimary
                             : null,
                       ),
                     ),
