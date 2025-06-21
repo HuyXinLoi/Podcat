@@ -33,7 +33,7 @@ class CommentList extends StatelessWidget {
 
         return ListView.builder(
           shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
+          //physics: const NeverScrollableScrollPhysics(),
           itemCount: comments.length,
           itemBuilder: (context, index) {
             final comment = comments[index];
@@ -51,7 +51,7 @@ class CommentList extends StatelessWidget {
                 children: [
                   Text(
                     comment.userId.isNotEmpty
-                        ? 'User ${comment.userId.substring(0, min(5, comment.userId.length))}'
+                        ? '${comment.userId.substring(0, min(5, comment.userId.length))}'
                         : 'Unknown User',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,

@@ -22,15 +22,21 @@ class PodcastPlayerScreen extends StatefulWidget {
   State<PodcastPlayerScreen> createState() => _PodcastPlayerScreenState();
 }
 
-class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
+class _PodcastPlayerScreenState extends State<PodcastPlayerScreen>
+    with SingleTickerProviderStateMixin {
   Duration _lastSavedProgressPosition = Duration.zero;
   String? _listenedPodcastId;
   final _commentController = TextEditingController();
+  late AnimationController _animationController;
 
   @override
   void initState() {
     super.initState();
     _initOrContinuePlaybackAndLoadDetails();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 7),
+    );
   }
 
   void _initOrContinuePlaybackAndLoadDetails() {
@@ -66,6 +72,7 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
       }
     }
     _commentController.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -146,7 +153,8 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
                 leading: const Icon(Icons.playlist_add),
                 title: Text(l10n.addToPlaylist),
                 onTap: () {
-                  Navigator.pop(ctx);
+                  //Navigator.pop(ctx);
+                  ctx.pop();
                   showDialog(
                     context: ctx,
                     builder: (dialogContext) =>
@@ -158,7 +166,8 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
                 leading: const Icon(Icons.share),
                 title: Text(l10n.share),
                 onTap: () {
-                  Navigator.pop(ctx);
+                  //Navigator.pop(ctx);
+                  ctx.pop();
                   ScaffoldMessenger.of(ctx).showSnackBar(
                     const SnackBar(
                         content:
@@ -236,6 +245,12 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
         listeners: [
           BlocListener<AudioPlayerBloc, AudioPlayerState>(
             listener: (context, audioState) {
+              if (audioState.isPlaying) {
+                _animationController.repeat();
+              } else {
+                _animationController.stop();
+              }
+
               if (audioState.hasCurrentPodcast) {
                 if (_listenedPodcastId != audioState.currentPodcast!.id) {
                   _lastSavedProgressPosition = Duration.zero;
@@ -322,22 +337,25 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Image.network(
-                      podcastDetails.imageUrl,
-                      width: MediaQuery.of(context).size.width * 0.7,
-                      height: MediaQuery.of(context).size.width * 0.7,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          width: MediaQuery.of(context).size.width * 0.7,
-                          height: MediaQuery.of(context).size.width * 0.7,
-                          color: Colors.grey[300],
-                          child: const Icon(Icons.headphones,
-                              size: 80, color: Colors.white),
-                        );
-                      },
+                  RotationTransition(
+                    turns: _animationController,
+                    child: ClipOval(
+                      //borderRadius: BorderRadius.circular(60),
+                      child: Image.network(
+                        podcastDetails.imageUrl,
+                        width: MediaQuery.of(context).size.width * 0.7,
+                        height: MediaQuery.of(context).size.width * 0.7,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            width: MediaQuery.of(context).size.width * 0.7,
+                            height: MediaQuery.of(context).size.width * 0.7,
+                            color: Colors.grey[300],
+                            child: const Icon(Icons.headphones,
+                                size: 80, color: Colors.white),
+                          );
+                        },
+                      ),
                     ),
                   ),
                   const SizedBox(height: 32),
@@ -403,19 +421,22 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
           flex: 1,
           child: Padding(
             padding: const EdgeInsets.all(32.0),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Image.network(
-                podcastDetails.imageUrl,
-                fit: BoxFit.cover,
-                height: double.infinity,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    color: Colors.grey[300],
-                    child: const Icon(Icons.headphones,
-                        size: 120, color: Colors.white),
-                  );
-                },
+            child: RotationTransition(
+              turns: _animationController,
+              child: ClipOval(
+                //orderRadius: BorderRadius.circular(16),
+                child: Image.network(
+                  podcastDetails.imageUrl,
+                  fit: BoxFit.cover,
+                  height: double.infinity,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: Colors.grey[300],
+                      child: const Icon(Icons.headphones,
+                          size: 120, color: Colors.white),
+                    );
+                  },
+                ),
               ),
             ),
           ),
@@ -701,7 +722,7 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen> {
               onTap: () {
                 context
                     .read<AudioPlayerBloc>()
-                    .add(SetSleepTimer(Duration(minutes: 1)));
+                    .add(SetSleepTimer(Duration(minutes: 10)));
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Nhạc sẽ tắt sau 10 phút')),
