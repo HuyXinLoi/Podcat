@@ -101,4 +101,32 @@ public class PodcastController {
         service.delete(id, userId);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}")
+    @Operation(
+        summary = "Update podcast",
+        security = @SecurityRequirement(name = "bearer-key")
+    )
+    public ResponseEntity<PodcastResponse> update(
+            @PathVariable String id,
+            @RequestBody PodcastRequest request,
+            @RequestHeader("Authorization") String auth) {
+        String userId = jwtService.extractUsername(auth.replace("Bearer ", ""));
+        return ResponseEntity.ok(service.update(id, userId, request));
+    }
+
+    @GetMapping("/author/{author}")
+    @Operation(summary = "Get podcasts by author")
+    public ResponseEntity<PageResponse<PodcastResponse>> getByAuthor(
+            @PathVariable String author,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestHeader(value = "Authorization", required = false) String auth) {
+        String userId = null;
+        if (auth != null && auth.startsWith("Bearer ")) {
+            userId = jwtService.extractUsername(auth.replace("Bearer ", ""));
+        }
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(service.getByAuthor(author, userId, pageable));
+    }
 }

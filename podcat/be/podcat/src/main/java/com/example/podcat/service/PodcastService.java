@@ -6,10 +6,12 @@ import com.example.podcat.exception.UnauthorizedException;
 import com.example.podcat.model.Category;
 import com.example.podcat.model.Comment;
 import com.example.podcat.model.Podcast;
+import com.example.podcat.model.Role;
 import com.example.podcat.repository.CategoryRepository;
 import com.example.podcat.repository.CommentRepository;
 import com.example.podcat.repository.FavoriteRepository;
 import com.example.podcat.repository.PodcastRepository;
+import com.example.podcat.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +30,7 @@ public class PodcastService {
     private final CommentRepository commentRepository;
     private final CategoryRepository categoryRepository;
     private final FavoriteRepository favoriteRepository;
+    private final UserRepository userRepository;
 
     public PodcastResponse create(String userId, PodcastRequest req) {
         Podcast podcast = Podcast.builder()
@@ -86,8 +89,23 @@ public class PodcastService {
     }
 
     public PageResponse<PodcastResponse> getByCategory(String categoryId, String userId, Pageable pageable) {
-        // Assuming you've added a findByCategoryId method to your repository
         Page<Podcast> podcastPage = repository.findByCategoryId(categoryId, pageable);
+        
+        List<PodcastResponse> content = podcastPage.getContent().stream()
+                .map(podcast -> toResponse(podcast, userId))
+                .collect(Collectors.toList());
+        
+        return new PageResponse<>(
+                content,
+                podcastPage.getNumber(),
+                podcastPage.getSize(),
+                podcastPage.getTotalElements(),
+                podcastPage.getTotalPages()
+        );
+    }
+
+    public PageResponse<PodcastResponse> getByAuthor(String author, String userId, Pageable pageable) {
+        Page<Podcast> podcastPage = repository.findByAuthorContainingIgnoreCase(author, pageable);
         
         List<PodcastResponse> content = podcastPage.getContent().stream()
                 .map(podcast -> toResponse(podcast, userId))
@@ -106,12 +124,41 @@ public class PodcastService {
         Podcast podcast = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Podcast not found"));
         
-        // Only the creator or an admin can delete a podcast
-        if (!podcast.getUserId().equals(userId)) {
+        // Check if user is the creator or admin
+        if (!podcast.getUserId().equals(userId) && !isAdmin(userId)) {
             throw new UnauthorizedException("You are not authorized to delete this podcast");
         }
         
         repository.deleteById(id);
+    }
+
+    public PodcastResponse update(String id, String userId, PodcastRequest req) {
+        Podcast podcast = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Podcast not found"));
+    
+        // Check if user is the creator or admin
+        if (!podcast.getUserId().equals(userId) && !isAdmin(userId)) {
+            throw new UnauthorizedException("You are not authorized to update this podcast");
+        }
+    
+        // Update fields
+        podcast.setTitle(req.getTitle());
+        podcast.setDescription(req.getDescription());
+        podcast.setAuthor(req.getAuthor());
+        podcast.setAudioUrl(req.getAudioUrl());
+        podcast.setImageUrl(req.getImageUrl());
+        podcast.setCategoryId(req.getCategoryId());
+        podcast.setTags(req.getTags());
+        podcast.setDuration(req.getDuration());
+    
+        repository.save(podcast);
+        return toResponse(podcast, userId);
+    }
+
+    private boolean isAdmin(String userId) {
+        return userRepository.findByUsername(userId)
+                .map(user -> user.getRoles().contains(Role.ADMIN))
+                .orElse(false);
     }
 
     private PodcastResponse toResponse(Podcast podcast, String userId) {
@@ -177,7 +224,8 @@ public class PodcastService {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
         
-        if (!comment.getUserId().equals(userId)) {
+        // Check if user is the comment author or admin
+        if (!comment.getUserId().equals(userId) && !isAdmin(userId)) {
             throw new UnauthorizedException("You are not authorized to delete this comment");
         }
         
