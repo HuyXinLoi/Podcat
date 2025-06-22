@@ -7,7 +7,6 @@ import 'package:podcat/core/utils/responsive_helper.dart';
 import 'package:podcat/models/category.dart';
 import 'package:podcat/models/podcast.dart';
 import 'package:podcat/repositories/podcast_repository.dart';
-import 'package:podcat/views/podcast/podcast_detail_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CategoryPodcastsScreen extends StatefulWidget {
@@ -23,16 +22,6 @@ class _CategoryPodcastsScreenState extends State<CategoryPodcastsScreen> {
   @override
   void initState() {
     super.initState();
-    //_loadPodcasts();
-  }
-
-  void _loadPodcasts() {
-    final podcastRepository = RepositoryProvider.of<PodcastRepository>(context);
-    final podcastBloc = PodcastBloc(podcastRepository: podcastRepository);
-    podcastBloc.add(LoadPodcastsByCategory(categoryId: widget.category.id));
-    BlocProvider.of<PodcastBloc>(context).add(
-      LoadPodcastsByCategory(categoryId: widget.category.id),
-    );
   }
 
   @override
@@ -69,7 +58,6 @@ class _CategoryPodcastsScreenState extends State<CategoryPodcastsScreen> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        // context.tr('noPodcastsInCategory'),
                         l10n.noPodcastsInCategory,
                         style: TextStyle(
                           fontSize: ResponsiveHelper.getFontSize(context, 18),
@@ -139,13 +127,6 @@ class _CategoryPodcastsScreenState extends State<CategoryPodcastsScreen> {
             ),
           ),
           onTap: () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (_) => PodcastDetailScreen(podcastId: podcast.id),
-            //   ),
-            // );
-            // context.push('/podcast/${podcast.id}');
             context.read<AudioPlayerBloc>().add(
                   PlayPodcast(
                     podcast: podcast,
@@ -173,12 +154,6 @@ class _CategoryPodcastsScreenState extends State<CategoryPodcastsScreen> {
         final podcast = podcasts[index];
         return GestureDetector(
           onTap: () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (_) => PodcastDetailScreen(podcastId: podcast.id),
-            //   ),
-            // );
             context.push('/podcast/${podcast.id}');
           },
           child: Column(

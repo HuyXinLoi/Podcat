@@ -121,13 +121,14 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen>
   void _showCurrentPlaylistDialog(
       BuildContext ctx, AudioPlayerState audioState) {
     if (!audioState.hasCurrentPodcast) return;
-    showDialog(
-      context: ctx,
-      builder: (_) => CurrentPlaylistDialog(
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => CurrentPlaylistBottomSheet(
         playlist: audioState.playlist,
         currentIndex: audioState.currentIndex,
         onPlayTrack: (podcast, index) {
-          // Navigator.of(ctx).pop();
           ctx.pop();
           if (audioState.currentPodcast?.id != podcast.id) {
             context.read<AudioPlayerBloc>().add(PlayPodcast(
@@ -183,47 +184,6 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen>
                   _showSleepTimerDialog(context);
                 },
               ),
-              ListTile(
-                leading: const Icon(Icons.repeat_one),
-                title: const Text('Lặp lại bài hát'),
-                onTap: () {
-                  context
-                      .read<AudioPlayerBloc>()
-                      .add(SetRepeatMode(AudioServiceRepeatMode.one));
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Đã bật lặp lại bài hát')),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.repeat),
-                title: const Text('Lặp lại danh sách phát'),
-                onTap: () {
-                  context
-                      .read<AudioPlayerBloc>()
-                      .add(SetRepeatMode(AudioServiceRepeatMode.all));
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Đã bật lặp lại danh sách phát')),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.repeat_on_outlined),
-                title: const Text('Tắt lặp lại'),
-                onTap: () {
-                  context
-                      .read<AudioPlayerBloc>()
-                      .add(SetRepeatMode(AudioServiceRepeatMode.none));
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Đã tắt chế độ lặp lại')),
-                  );
-                },
-              ),
-
               // Thêm các action khác nếu cần
             ],
           ),
@@ -517,26 +477,38 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen>
               Text(_formatDuration(duration)),
             ],
           ),
-          Slider(
-            activeColor: Theme.of(context).colorScheme.primary,
-            inactiveColor: Theme.of(context).colorScheme.onPrimary,
-            value: (duration.inSeconds > 0)
-                ? position.inSeconds
-                    .toDouble()
-                    .clamp(0.0, duration.inSeconds.toDouble())
-                : 0.0,
-            min: 0,
-            max: (duration.inSeconds > 0) ? duration.inSeconds.toDouble() : 1.0,
-            onChanged: canControl
-                ? (value) {
-                    audioPlayerBloc.add(
-                        SeekTo(position: Duration(seconds: value.toInt())));
-                  }
-                : null,
+          SliderTheme(
+            data: SliderTheme.of(context).copyWith(
+              trackHeight: 1,
+              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 4),
+              overlayShape: const RoundSliderOverlayShape(overlayRadius: 12),
+              activeTrackColor: Theme.of(context).colorScheme.primary,
+              inactiveTrackColor: Theme.of(context).colorScheme.onPrimary,
+              thumbColor: Theme.of(context).colorScheme.primary,
+            ),
+            child: Slider(
+              value: (duration.inSeconds > 0)
+                  ? position.inSeconds
+                      .toDouble()
+                      .clamp(0.0, duration.inSeconds.toDouble())
+                  : 0.0,
+              min: 0,
+              max: (duration.inSeconds > 0)
+                  ? duration.inSeconds.toDouble()
+                  : 1.0,
+              onChanged: canControl
+                  ? (value) {
+                      audioPlayerBloc.add(
+                        SeekTo(position: Duration(seconds: value.toInt())),
+                      );
+                    }
+                  : null,
+            ),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
+              _buildRepeatButton(context, audioStateGlobal, canControl),
               IconButton(
                 icon: const Icon(Icons.skip_previous),
                 iconSize: ResponsiveHelper.isMobile(context) ? 30 : 36,
@@ -544,19 +516,19 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen>
                     ? () => audioPlayerBloc.add(PreviousPodcast())
                     : null,
               ),
-              IconButton(
-                icon: const Icon(Icons.replay_10),
-                iconSize: ResponsiveHelper.isMobile(context) ? 30 : 36,
-                onPressed: canControl
-                    ? () {
-                        final newPos = audioStateGlobal.position -
-                            const Duration(seconds: 10);
-                        audioPlayerBloc.add(SeekTo(
-                            position:
-                                newPos.isNegative ? Duration.zero : newPos));
-                      }
-                    : null,
-              ),
+              // IconButton(
+              //   icon: const Icon(Icons.replay_10),
+              //   iconSize: ResponsiveHelper.isMobile(context) ? 30 : 36,
+              //   onPressed: canControl
+              //       ? () {
+              //           final newPos = audioStateGlobal.position -
+              //               const Duration(seconds: 10);
+              //           audioPlayerBloc.add(SeekTo(
+              //               position:
+              //                   newPos.isNegative ? Duration.zero : newPos));
+              //         }
+              //       : null,
+              // ),
               isLoadingDisplayedPodcast
                   ? SizedBox(
                       width: ResponsiveHelper.isMobile(context) ? 56 : 72,
@@ -592,26 +564,35 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen>
                         }
                       },
                     ),
-              IconButton(
-                icon: const Icon(Icons.forward_30),
-                iconSize: ResponsiveHelper.isMobile(context) ? 30 : 36,
-                onPressed: canControl
-                    ? () {
-                        final newPos = audioStateGlobal.position +
-                            const Duration(seconds: 30);
-                        audioPlayerBloc.add(SeekTo(
-                            position: newPos > audioStateGlobal.duration
-                                ? audioStateGlobal.duration
-                                : newPos));
-                      }
-                    : null,
-              ),
+
               IconButton(
                 icon: const Icon(Icons.skip_next),
                 iconSize: ResponsiveHelper.isMobile(context) ? 30 : 36,
                 onPressed: (audioStateGlobal.hasNextPodcast && canControl)
                     ? () => audioPlayerBloc.add(NextPodcast())
                     : null,
+              ),
+              // IconButton(
+              //   icon: const Icon(Icons.forward_30),
+              //   iconSize: ResponsiveHelper.isMobile(context) ? 30 : 36,
+              //   onPressed: canControl
+              //       ? () {
+              //           final newPos = audioStateGlobal.position +
+              //               const Duration(seconds: 30);
+              //           audioPlayerBloc.add(SeekTo(
+              //               position: newPos > audioStateGlobal.duration
+              //                   ? audioStateGlobal.duration
+              //                   : newPos));
+              //         }
+              //       : null,
+              // ),
+              IconButton(
+                icon: const Icon(Icons.playlist_play_outlined),
+                onPressed: (audioStateGlobal.playlist.isNotEmpty && canControl)
+                    ? () =>
+                        _showCurrentPlaylistDialog(context, audioStateGlobal)
+                    : null,
+                tooltip: 'abcd',
               ),
             ],
           ),
@@ -684,24 +665,35 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen>
                         Theme.of(context).textTheme.bodyLarge?.color),
               ),
 
-              // NÚT XEM PLAYLIST
+              // NÚT HẸN GIỜ TẮT NHẠC
               IconButton(
-                icon: const Icon(Icons.playlist_play_outlined),
-                onPressed: (audioStateGlobal.playlist.isNotEmpty && canControl)
-                    ? () =>
-                        _showCurrentPlaylistDialog(context, audioStateGlobal)
+                icon: const Icon(Icons.timer),
+                onPressed:
+                    canControl ? () => _showSleepTimerDialog(context) : null,
+                tooltip: 'Hẹn giờ tắt nhạc',
+              ),
+
+              // NÚT THÊM VÀO PLAYLIST
+              IconButton(
+                icon: const Icon(Icons.playlist_add),
+                onPressed: canControl
+                    ? () => showDialog(
+                          context: context,
+                          builder: (dialogContext) => AddToPlaylistDialog(
+                              podcastId: displayedPodcast.id),
+                        )
                     : null,
-                tooltip: 'abcd',
+                tooltip: 'Thêm vào Playlist',
               ),
 
               // NÚT MORE ACTIONS
-              IconButton(
-                icon: const Icon(Icons.more_horiz_outlined),
-                onPressed: canControl
-                    ? () => _showMoreActionsDialog(context, displayedPodcast)
-                    : null,
-                tooltip: 'More Actions',
-              ),
+              // IconButton(
+              //   icon: const Icon(Icons.more_horiz_outlined),
+              //   onPressed: canControl
+              //       ? () => _showMoreActionsDialog(context, displayedPodcast)
+              //       : null,
+              //   tooltip: 'More Actions',
+              // ),
             ],
           ),
           const SizedBox(height: 8),
@@ -756,6 +748,73 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen>
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildRepeatButton(
+      BuildContext context, AudioPlayerState audioState, bool canControl) {
+    final currentMode = audioState.repeatMode;
+
+    IconData icon;
+    String tooltip;
+
+    // Xác định icon và tooltip dựa trên chế độ hiện tại
+    switch (currentMode) {
+      case AudioServiceRepeatMode.none:
+        icon = Icons.repeat;
+        tooltip = 'Đã tắt lặp lại';
+        break;
+      case AudioServiceRepeatMode.all:
+        icon = Icons.repeat;
+        tooltip = 'Lặp lại danh sách phát';
+        break;
+      case AudioServiceRepeatMode.one:
+        icon = Icons.repeat_one;
+        tooltip = 'Lặp lại bài hát này';
+        break;
+      default:
+        icon = Icons.repeat;
+        tooltip = 'Chế độ lặp lại';
+    }
+
+    // Xác định hành động khi nhấn nút
+    void handleTap() {
+      final bloc = context.read<AudioPlayerBloc>();
+      String message;
+      switch (currentMode) {
+        case AudioServiceRepeatMode.none:
+          bloc.add(SetRepeatMode(AudioServiceRepeatMode.all));
+          message = 'Đã bật lặp lại danh sách phát';
+          break;
+        case AudioServiceRepeatMode.all:
+          bloc.add(SetRepeatMode(AudioServiceRepeatMode.one));
+          message = 'Đã bật lặp lại bài hát';
+          break;
+        case AudioServiceRepeatMode.one:
+          bloc.add(SetRepeatMode(AudioServiceRepeatMode.none));
+          message = 'Đã tắt chế độ lặp lại';
+          break;
+        default:
+          bloc.add(SetRepeatMode(AudioServiceRepeatMode.none));
+          message = 'Đã tắt chế độ lặp lại';
+      }
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(
+          content: Text(message),
+          duration: const Duration(seconds: 2),
+        ));
+    }
+
+    return IconButton(
+      icon: Icon(icon),
+      iconSize: ResponsiveHelper.isMobile(context) ? 28 : 32,
+      tooltip: tooltip,
+      // Nút sẽ có màu primary khi đang bật một chế độ lặp lại nào đó
+      color: currentMode == AudioServiceRepeatMode.none
+          ? Theme.of(context).iconTheme.color
+          : Theme.of(context).colorScheme.primary,
+      onPressed: canControl ? handleTap : null,
     );
   }
 }

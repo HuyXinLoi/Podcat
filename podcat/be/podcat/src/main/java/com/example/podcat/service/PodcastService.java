@@ -33,6 +33,7 @@ public class PodcastService {
         Podcast podcast = Podcast.builder()
                 .title(req.getTitle())
                 .description(req.getDescription())
+                .author(req.getAuthor())
                 .audioUrl(req.getAudioUrl())
                 .imageUrl(req.getImageUrl())
                 .createdAt(Instant.now())
@@ -69,7 +70,7 @@ public class PodcastService {
     }
 
     public PageResponse<PodcastResponse> search(String keyword, String userId, Pageable pageable) {
-        Page<Podcast> podcastPage = repository.findByTitleContainingIgnoreCase(keyword, pageable);
+        Page<Podcast> podcastPage = repository.findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(keyword, keyword, pageable);
         
         List<PodcastResponse> content = podcastPage.getContent().stream()
                 .map(podcast -> toResponse(podcast, userId))
@@ -130,6 +131,7 @@ public class PodcastService {
                 .id(podcast.getId())
                 .title(podcast.getTitle())
                 .description(podcast.getDescription())
+                .author(podcast.getAuthor())
                 .audioUrl(podcast.getAudioUrl())
                 .imageUrl(podcast.getImageUrl())
                 .createdAt(podcast.getCreatedAt().toString())

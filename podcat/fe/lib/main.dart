@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:just_audio_background/just_audio_background.dart';
 import 'package:podcat/blocs/audio_player/audio_player_bloc.dart';
 import 'package:podcat/blocs/auth/auth_bloc.dart';
 import 'package:podcat/blocs/category/category_bloc.dart';

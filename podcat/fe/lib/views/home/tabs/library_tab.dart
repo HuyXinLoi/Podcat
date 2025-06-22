@@ -5,9 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:podcat/blocs/favorite/favorite_bloc.dart';
 import 'package:podcat/blocs/playlist/playlist_bloc.dart';
 import 'package:podcat/core/utils/responsive_helper.dart';
-import 'package:podcat/views/playlist/playlist_detail_screen.dart';
-import 'package:podcat/views/playlist/playlist_form_screen.dart';
-import 'package:podcat/views/podcast/podcast_detail_screen.dart';
 
 class LibraryTab extends StatefulWidget {
   const LibraryTab({super.key});

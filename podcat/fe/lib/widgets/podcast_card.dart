@@ -15,7 +15,6 @@ class PodcastCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cardWidth = ResponsiveHelper.getCardWidth(context);
-    final cardHeight = ResponsiveHelper.getCardHeight(context);
 
     return GestureDetector(
       onTap: onTap,

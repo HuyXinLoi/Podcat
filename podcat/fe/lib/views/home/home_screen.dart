@@ -57,12 +57,20 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       },
       child: Scaffold(
-        body: Column(
+        body: Stack(
           children: [
-            Expanded(
+            Positioned.fill(
               child: widget.child ?? _tabs[_currentIndex],
             ),
-            const MiniPlayer(),
+            const Positioned(
+              bottom: 1,
+              left: 0,
+              right: 0,
+              child: Padding(
+                padding: EdgeInsets.only(left: 8, right: 8),
+                child: MiniPlayer(),
+              ),
+            ),
           ],
         ),
         bottomNavigationBar: BottomNavigationBar(

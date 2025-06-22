@@ -25,6 +25,7 @@ public class Podcast {
     
     // New fields
     private String userId; // Creator of the podcast
+    private String author;
     private String categoryId;
     private List<String> tags = new ArrayList<>();
     private int viewCount = 0;

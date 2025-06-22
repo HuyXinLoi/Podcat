@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:podcat/models/podcast.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class CurrentPlaylistDialog extends StatelessWidget {
+class CurrentPlaylistBottomSheet extends StatelessWidget {
   final List<Podcast> playlist;
   final int currentIndex;
   final Function(Podcast podcast, int index) onPlayTrack;
 
-  const CurrentPlaylistDialog({
+  const CurrentPlaylistBottomSheet({
     super.key,
     required this.playlist,
     required this.currentIndex,
@@ -16,19 +15,44 @@ class CurrentPlaylistDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return AlertDialog(
-      title: Text('DSP Playlist'),
-      content: SizedBox(
-        width: double.maxFinite,
-        child: playlist.isEmpty
-            ? Center(child: Text('Empty Playlist'))
-            : ListView.builder(
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.background,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 40,
+            height: 4,
+            margin: const EdgeInsets.only(bottom: 12),
+            decoration: BoxDecoration(
+              color: Colors.grey[400],
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          Text(
+            'DSP Playlist',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
+          const SizedBox(height: 8),
+          if (playlist.isEmpty)
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Center(child: Text('Empty Playlist')),
+            )
+          else
+            Flexible(
+              child: ListView.builder(
                 shrinkWrap: true,
                 itemCount: playlist.length,
                 itemBuilder: (context, index) {
                   final podcast = playlist[index];
-                  final bool isCurrent = index == currentIndex;
+                  final isCurrent = index == currentIndex;
                   return ListTile(
                     leading: ClipRRect(
                       borderRadius: BorderRadius.circular(4),
@@ -49,27 +73,24 @@ class CurrentPlaylistDialog extends StatelessWidget {
                         fontWeight:
                             isCurrent ? FontWeight.bold : FontWeight.normal,
                         color: isCurrent
-                            ? Theme.of(context).colorScheme.onPrimary
+                            ? Theme.of(context).colorScheme.primary
                             : null,
                       ),
                     ),
-                    subtitle: Text(podcast.categoryName ?? '',
-                        maxLines: 1, overflow: TextOverflow.ellipsis),
+                    subtitle: Text(
+                      podcast.categoryName ?? '',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                     onTap: () => onPlayTrack(podcast, index),
                     selected: isCurrent,
-                    selectedTileColor: isCurrent
-                        ? Theme.of(context).colorScheme.primary
-                        : null,
+                    selectedTileColor: Theme.of(context).colorScheme.primary,
                   );
                 },
               ),
+            ),
+        ],
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(l10n.cancel),
-        ),
-      ],
     );
   }
 }

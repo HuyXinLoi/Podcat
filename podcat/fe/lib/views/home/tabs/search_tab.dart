@@ -4,7 +4,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:podcat/blocs/podcast/podcast_bloc.dart';
 import 'package:podcat/core/utils/responsive_helper.dart';
-import 'package:podcat/views/podcast/podcast_detail_screen.dart';
 
 class SearchTab extends StatefulWidget {
   const SearchTab({super.key});

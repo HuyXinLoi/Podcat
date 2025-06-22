@@ -168,7 +168,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Image.network(podcast.imageUrl ?? ''),
+        Image.network(podcast.imageUrl),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Text(
@@ -197,7 +197,7 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
   Widget _buildDescription(Podcast podcast) {
     return Padding(
       padding: const EdgeInsets.all(10.0),
-      child: Text(podcast.description ?? ''),
+      child: Text(podcast.description),
     );
   }
 

@@ -13,6 +13,9 @@ public class PodcastRequest {
     @Schema(description = "Description of the podcast", 
             example = "A weekly podcast tracing the history of the Roman Empire...")
     private String description;
+
+    @Schema(description = "Author of the podcast", example = "Mike Duncan")
+    private String author;
     
     @Schema(description = "URL to the audio file", 
             example = "https://example.com/podcasts/rome-ep1.mp3")

@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:podcat/blocs/audio_player/audio_player_bloc.dart';
 import 'package:podcat/blocs/podcast/podcast_bloc.dart';
 import 'package:podcat/core/utils/responsive_helper.dart';
 import 'package:podcat/models/playlist.dart';
 import 'package:podcat/models/podcast.dart';
-import 'package:podcat/views/podcast/podcast_detail_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PlaylistDetailScreen extends StatefulWidget {
@@ -61,7 +59,6 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.playlist.name),

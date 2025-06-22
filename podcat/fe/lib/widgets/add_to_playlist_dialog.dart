@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:podcat/blocs/playlist/playlist_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:podcat/core/utils/responsive_helper.dart';
-import 'package:podcat/views/playlist/playlist_form_screen.dart';
 
 class AddToPlaylistDialog extends StatelessWidget {
   final String podcastId;
