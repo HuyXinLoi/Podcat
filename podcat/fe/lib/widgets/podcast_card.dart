@@ -15,7 +15,6 @@ class PodcastCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cardWidth = ResponsiveHelper.getCardWidth(context);
-    final cardHeight = ResponsiveHelper.getCardHeight(context);
 
     return GestureDetector(
       onTap: onTap,
@@ -56,16 +55,15 @@ class PodcastCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 4),
-            if (podcast.categoryName != null)
-              Text(
-                podcast.categoryName!,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontSize: ResponsiveHelper.getFontSize(context, 12),
-                ),
+            Text(
+              podcast.author,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.primary,
+                fontSize: ResponsiveHelper.getFontSize(context, 12),
               ),
+            ),
           ],
         ),
       ),

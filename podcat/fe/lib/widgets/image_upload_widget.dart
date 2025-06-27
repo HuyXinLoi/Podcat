@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:podcat/core/services/upload_service.dart';
-import 'package:podcat/core/utils/responsive_helper.dart';
 
 class ImageUploadWidget extends StatefulWidget {
   final String? initialImageUrl;

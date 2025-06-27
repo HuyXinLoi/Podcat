@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:podcat/blocs/audio_player/audio_player_bloc.dart';
 import 'package:podcat/blocs/podcast/podcast_bloc.dart';
 import 'package:podcat/core/utils/responsive_helper.dart';
 import 'package:podcat/models/playlist.dart';
 import 'package:podcat/models/podcast.dart';
-import 'package:podcat/views/podcast/podcast_detail_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PlaylistDetailScreen extends StatefulWidget {
@@ -37,7 +37,6 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
           final podcastBloc = context.read<PodcastBloc>();
           podcastBloc.add(LoadPodcastById(id: podcastId));
 
-          // Wait for the podcast to load
           await Future.delayed(const Duration(milliseconds: 500));
 
           final state = podcastBloc.state;
@@ -60,7 +59,6 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.playlist.name),
@@ -171,15 +169,39 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
             ),
           ),
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => PodcastDetailScreen(podcastId: podcast.id),
-              ),
-            );
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(
+            //     builder: (_) => PodcastDetailScreen(podcastId: podcast.id),
+            //   ),
+            // );
+            // context.push('podcast/${podcast.id}');
+            final playablePodcasts = widget.playlist.podcastIds
+                .map((id) => _podcasts[id])
+                .whereType<Podcast>()
+                .toList();
+
+            final realIndex =
+                playablePodcasts.indexWhere((p) => p.id == podcastId);
+
+            if (realIndex != -1) {
+              _playPodcastFromList(playablePodcasts, realIndex, context);
+            }
           },
         );
       },
     );
+  }
+
+  void _playPodcastFromList(
+      List<Podcast> podcasts, int index, BuildContext context) {
+    final podcast = podcasts[index];
+    context.read<AudioPlayerBloc>().add(
+          PlayPodcast(
+            podcast: podcast,
+            playlist: podcasts,
+            startIndex: index,
+          ),
+        );
   }
 }

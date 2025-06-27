@@ -31,7 +31,7 @@ class ResponsiveHelper {
     DeviceType deviceType = getDeviceType(context);
     switch (deviceType) {
       case DeviceType.mobile:
-        return MediaQuery.of(context).size.width * 0.42;
+        return MediaQuery.of(context).size.width * 0.36;
       case DeviceType.tablet:
         return 180;
       case DeviceType.desktop:

@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:go_router/go_router.dart';
 import 'package:podcat/blocs/favorite/favorite_bloc.dart';
 import 'package:podcat/blocs/playlist/playlist_bloc.dart';
 import 'package:podcat/core/utils/responsive_helper.dart';
-import 'package:podcat/views/playlist/playlist_detail_screen.dart';
-import 'package:podcat/views/playlist/playlist_form_screen.dart';
-import 'package:podcat/views/podcast/podcast_detail_screen.dart';
 
 class LibraryTab extends StatefulWidget {
   const LibraryTab({super.key});
@@ -66,12 +64,13 @@ class _LibraryTabState extends State<LibraryTab>
       floatingActionButton: _tabController.index == 1
           ? FloatingActionButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const PlaylistFormScreen(),
-                  ),
-                );
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (_) => const PlaylistFormScreen(),
+                //   ),
+                // );
+                context.pushNamed('playlist-create');
               },
               child: const Icon(Icons.add),
             )
@@ -180,13 +179,14 @@ class _LibraryTabState extends State<LibraryTab>
                   },
                 ),
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          PodcastDetailScreen(podcastId: podcast.id),
-                    ),
-                  );
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (_) =>
+                  //         PodcastDetailScreen(podcastId: podcast.id),
+                  //   ),
+                  // );
+                  context.push('/podcast/${podcast.id}');
                 },
               );
             },
@@ -244,12 +244,13 @@ class _LibraryTabState extends State<LibraryTab>
                   const SizedBox(height: 24),
                   ElevatedButton.icon(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const PlaylistFormScreen(),
-                        ),
-                      );
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (_) => const PlaylistFormScreen(),
+                      //   ),
+                      // );
+                      context.pushNamed('playlist-create');
                     },
                     icon: const Icon(Icons.add),
                     label: Text(l10n.createPlaylist),
@@ -294,11 +295,16 @@ class _LibraryTabState extends State<LibraryTab>
                   ),
                 ),
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => PlaylistDetailScreen(playlist: playlist),
-                    ),
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (_) => PlaylistDetailScreen(playlist: playlist),
+                  //   ),
+                  // );
+                  context.pushNamed(
+                    'playlist-detail',
+                    pathParameters: {'id': playlist.id},
+                    extra: playlist,
                   );
                 },
               );

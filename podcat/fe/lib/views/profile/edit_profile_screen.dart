@@ -127,8 +127,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             ? Text(
                                 (user.name?.isNotEmpty ?? false)
                                     ? user.name![0].toUpperCase()
-                                    : (user.username?.isNotEmpty ?? false)
-                                        ? user.username![0].toUpperCase()
+                                    : (user.username.isNotEmpty)
+                                        ? user.username[0].toUpperCase()
                                         : '',
                                 style: TextStyle(
                                   fontSize:

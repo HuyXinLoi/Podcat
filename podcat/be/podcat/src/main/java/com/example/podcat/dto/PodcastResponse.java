@@ -17,6 +17,9 @@ public class PodcastResponse {
     
     @Schema(description = "Description of the podcast")
     private String description;
+
+    @Schema(description = "Author of the podcast", example = "Mike Duncan")
+    private String author;
     
     @Schema(description = "URL to the audio file")
     private String audioUrl;

@@ -2,6 +2,7 @@ class Podcast {
   final String id;
   final String title;
   final String description;
+  final String author;
   final String audioUrl;
   final String imageUrl;
   final String createdAt;
@@ -18,6 +19,7 @@ class Podcast {
     required this.id,
     required this.title,
     required this.description,
+    required this.author,
     required this.audioUrl,
     required this.imageUrl,
     required this.createdAt,
@@ -36,6 +38,7 @@ class Podcast {
       id: json['id'] ?? '',
       title: json['title'] ?? '',
       description: json['description'] ?? '',
+      author: json['author'] ?? '',
       audioUrl: json['audioUrl'] ?? '',
       imageUrl: json['imageUrl'] ?? '',
       createdAt: json['createdAt'] ?? '',
@@ -55,6 +58,7 @@ class Podcast {
       'id': id,
       'title': title,
       'description': description,
+      'author': author,
       'audioUrl': audioUrl,
       'imageUrl': imageUrl,
       'createdAt': createdAt,
@@ -79,6 +83,7 @@ class Podcast {
     String? id,
     String? title,
     String? description,
+    String? author,
     String? audioUrl,
     String? imageUrl,
     String? createdAt,
@@ -95,6 +100,7 @@ class Podcast {
       id: id ?? this.id,
       title: title ?? this.title,
       description: description ?? this.description,
+      author: author ?? this.author,
       audioUrl: audioUrl ?? this.audioUrl,
       imageUrl: imageUrl ?? this.imageUrl,
       createdAt: createdAt ?? this.createdAt,

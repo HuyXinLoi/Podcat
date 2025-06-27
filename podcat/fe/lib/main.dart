@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:podcat/blocs/audio_player/audio_player_bloc.dart';
 import 'package:podcat/blocs/auth/auth_bloc.dart';
 import 'package:podcat/blocs/category/category_bloc.dart';
 import 'package:podcat/blocs/favorite/favorite_bloc.dart';
@@ -16,7 +17,14 @@ import 'package:podcat/repositories/favorite_repository.dart';
 import 'package:podcat/repositories/playlist_repository.dart';
 import 'package:podcat/repositories/podcast_repository.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // await JustAudioBackground.init(
+  //   androidNotificationChannelId: 'com.yourcompany.podcat.channel.audio',
+  //   androidNotificationChannelName: 'Podcat Audio Playback',
+  //   androidNotificationOngoing: true,
+  // );
   runApp(const MyApp());
 }
 
@@ -63,11 +71,14 @@ class MyApp extends StatelessWidget {
               playlistRepository: context.read<PlaylistRepository>(),
             ),
           ),
+          BlocProvider(
+            create: (context) => AudioPlayerBloc(),
+          ),
         ],
         child: BlocBuilder<LanguageBloc, LanguageState>(
           builder: (context, state) {
             return MaterialApp.router(
-              title: 'Podcat',
+              title: 'DUYNH',
               debugShowCheckedModeBanner: false,
               theme: AppTheme.lightTheme,
               darkTheme: AppTheme.darkTheme,

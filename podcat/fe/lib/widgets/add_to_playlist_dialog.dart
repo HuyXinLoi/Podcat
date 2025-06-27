@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:podcat/blocs/playlist/playlist_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:podcat/core/utils/responsive_helper.dart';
-import 'package:podcat/views/playlist/playlist_form_screen.dart';
 
 class AddToPlaylistDialog extends StatelessWidget {
   final String podcastId;
@@ -12,7 +12,6 @@ class AddToPlaylistDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Load playlists if not already loaded
     final l10n = AppLocalizations.of(context)!;
     final playlistState = context.read<PlaylistBloc>().state;
     if (playlistState.playlists == null) {
@@ -57,13 +56,15 @@ class AddToPlaylistDialog extends StatelessWidget {
                           const SizedBox(height: 16),
                           ElevatedButton(
                             onPressed: () {
-                              Navigator.pop(context);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const PlaylistFormScreen(),
-                                ),
-                              );
+                              // Navigator.pop(context);
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder: (_) => const PlaylistFormScreen(),
+                              //   ),
+                              // );
+                              context.pop();
+                              context.push('/playlist/create');
                             },
                             child: Text(l10n.createPlaylist),
                           ),
@@ -138,13 +139,15 @@ class AddToPlaylistDialog extends StatelessWidget {
                 const SizedBox(width: 8),
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const PlaylistFormScreen(),
-                      ),
-                    );
+                    // Navigator.pop(context);
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (_) => const PlaylistFormScreen(),
+                    //   ),
+                    // );
+                    context.pop();
+                    context.push('/playlist/create');
                   },
                   child: Text(l10n.newPlaylist),
                 ),

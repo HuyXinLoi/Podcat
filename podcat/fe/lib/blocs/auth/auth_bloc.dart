@@ -3,6 +3,8 @@ import 'package:equatable/equatable.dart';
 import 'package:podcat/models/user.dart';
 import 'package:podcat/repositories/auth_repository.dart';
 
+import '../../core/services/audio_handler.dart';
+
 part 'auth_event.dart';
 part 'auth_state.dart';
 
