@@ -78,7 +78,7 @@ class CurrentPlaylistBottomSheet extends StatelessWidget {
                       ),
                     ),
                     subtitle: Text(
-                      podcast.categoryName ?? '',
+                      podcast.author,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),

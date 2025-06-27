@@ -55,16 +55,15 @@ class PodcastCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 4),
-            if (podcast.categoryName != null)
-              Text(
-                podcast.categoryName!,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontSize: ResponsiveHelper.getFontSize(context, 12),
-                ),
+            Text(
+              podcast.author,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.primary,
+                fontSize: ResponsiveHelper.getFontSize(context, 12),
               ),
+            ),
           ],
         ),
       ),

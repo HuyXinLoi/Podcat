@@ -331,29 +331,27 @@ class _PodcastPlayerScreenState extends State<PodcastPlayerScreen>
                     ),
                   ),
                   const SizedBox(height: 8),
-                  if (podcastDetails.categoryName != null &&
-                      podcastDetails.categoryName!.isNotEmpty)
-                    Text(
-                      podcastDetails.categoryName!,
-                      style: TextStyle(
-                        fontSize: ResponsiveHelper.getFontSize(context, 16),
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                      textAlign: TextAlign.center,
+                  Text(
+                    podcastDetails.author,
+                    style: TextStyle(
+                      fontSize: ResponsiveHelper.getFontSize(context, 16),
+                      color: Theme.of(context).colorScheme.primary,
                     ),
-                  const SizedBox(height: 16),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 8.0),
-                    child: Text(
-                      description,
-                      style: TextStyle(
-                          fontSize: ResponsiveHelper.getFontSize(context, 14)),
-                      textAlign: TextAlign.justify,
-                      maxLines: 5,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                    textAlign: TextAlign.center,
                   ),
+                  const SizedBox(height: 16),
+                  // Padding(
+                  //   padding: const EdgeInsets.symmetric(
+                  //       horizontal: 16.0, vertical: 8.0),
+                  //   child: Text(
+                  //     description,
+                  //     style: TextStyle(
+                  //         fontSize: ResponsiveHelper.getFontSize(context, 14)),
+                  //     textAlign: TextAlign.justify,
+                  //     maxLines: 5,
+                  //     overflow: TextOverflow.ellipsis,
+                  //   ),
+                  // ),
                 ],
               ),
             ),

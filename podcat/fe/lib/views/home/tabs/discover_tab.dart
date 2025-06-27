@@ -234,7 +234,7 @@ class DiscoverTab extends StatelessWidget {
                     ),
                   ),
                   subtitle: Text(
-                    podcast.description,
+                    podcast.author,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
